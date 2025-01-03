@@ -68,6 +68,7 @@ func (list *DequeueList[T]) PushRight(value T) {
 	}
 	if list.head == nil {
 		list.head = newNode
+		return
 	}
 
 	// If the list is not empty (tail is not nil)
