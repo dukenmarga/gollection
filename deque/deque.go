@@ -123,10 +123,28 @@ func (list *DequeueList[T]) PopRight() T {
 	return popNode.value
 }
 
-func (list *DequeueList[T]) DisplayQueue() {
+// Debug prints the value of each node in the list.
+// It contains basic information about the list.
+func (list *DequeueList[T]) Debug() {
 	current := list.head
+	count := 1
 	for current != nil {
-		fmt.Printf("Val: %v\n", current.value)
+		fmt.Printf("No.: %v\n", count)
+		if current.prev == nil {
+			fmt.Print("nil <- ")
+		} else {
+			fmt.Printf("%v <- ", current.prev.value)
+		}
+
+		fmt.Printf("%v", current.value)
+
+		if current.next == nil {
+			fmt.Print(" -> nil\n")
+		} else {
+			fmt.Printf(" -> %v\n\n", current.next.value)
+		}
+
 		current = current.next
+		count++
 	}
 }
