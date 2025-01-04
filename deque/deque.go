@@ -130,7 +130,12 @@ func (list *DequeueList[T]) PopLeft() (T, error) {
 	return popNode.value, nil
 }
 
-func (list *DequeueList[T]) PopRight() T {
+func (list *DequeueList[T]) PopRight() (T, error) {
+	if list.tail == nil {
+		var empty T
+		return empty, fmt.Errorf("list is empty")
+	}
+
 	// get current tail
 	popNode := list.tail
 
@@ -148,7 +153,7 @@ func (list *DequeueList[T]) PopRight() T {
 	// update length
 	list.length--
 
-	return popNode.value
+	return popNode.value, nil
 }
 
 // Debug prints the value of each node in the list.
