@@ -43,7 +43,6 @@ func TestNewDequeueFromString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			got := NewDequeue[string](tt.input)
 			for _, wantVal := range tt.wantDequeVal {
 				pop, _ := got.PopLeft()
@@ -91,11 +90,15 @@ func TestPushRight(t *testing.T) {
 			for _, input := range tt.input {
 				list.PushRight(input)
 			}
-			for _, wantVal := range tt.wantDequeVal {
-				pop, _ := list.PopLeft()
-				if wantVal != pop {
-					t.Errorf("expected = %v, want %v", pop, wantVal)
+
+			currentNode := list.head
+			counter := 0
+			for currentNode != nil {
+				if currentNode.value != tt.wantDequeVal[counter] {
+					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
 				}
+				currentNode = currentNode.next
+				counter++
 			}
 		})
 	}
@@ -137,11 +140,15 @@ func TestPushLeft(t *testing.T) {
 			for _, input := range tt.input {
 				list.PushLeft(input)
 			}
-			for _, wantVal := range tt.wantDequeVal {
-				pop, _ := list.PopLeft()
-				if wantVal != pop {
-					t.Errorf("expected = %v, want %v", pop, wantVal)
+
+			currentNode := list.head
+			counter := 0
+			for currentNode != nil {
+				if currentNode.value != tt.wantDequeVal[counter] {
+					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
 				}
+				currentNode = currentNode.next
+				counter++
 			}
 		})
 	}
