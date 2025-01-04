@@ -215,3 +215,64 @@ func TestPopLeft(t *testing.T) {
 		})
 	}
 }
+
+func TestPopRight(t *testing.T) {
+	tests := []testCasePop[string]{
+		{
+			name: "Test pop right using string values",
+			input: []string{
+				"10",
+				"20",
+				"30",
+			},
+			wantDequeVal: []string{
+				"10",
+				"20",
+			},
+			wantPop: "30",
+			wantErr: nil,
+		},
+		{
+			name: "Test pop right from several empty string",
+			input: []string{
+				"",
+				"",
+			},
+			wantDequeVal: []string{
+				"",
+			},
+			wantPop: "",
+			wantErr: nil,
+		},
+		{
+			name:         "Test no pop right from empty list",
+			input:        []string{},
+			wantDequeVal: []string{},
+			wantPop:      "",
+			wantErr:      fmt.Errorf("list is empty"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := NewDequeue[string](tt.input)
+
+			pop, err := list.PopRight()
+			if pop != tt.wantPop {
+				t.Errorf("expected = %v, want %v", pop, tt.wantPop)
+			}
+			if err != nil && err.Error() != tt.wantErr.Error() {
+				t.Errorf("expected = %v, want %v", err, tt.wantErr)
+			}
+
+			currentNode := list.head
+			counter := 0
+			for currentNode != nil {
+				if currentNode.value != tt.wantDequeVal[counter] {
+					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+				}
+				currentNode = currentNode.next
+				counter++
+			}
+		})
+	}
+}
