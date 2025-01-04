@@ -283,3 +283,88 @@ func TestPopRight(t *testing.T) {
 		})
 	}
 }
+
+type testCaseLength[T any] struct {
+	name       string
+	input      []T
+	wantLength uint
+}
+
+func TestLengthFromSlice(t *testing.T) {
+	tests := []testCaseLength[string]{
+		{
+			name:       "Test length using string values",
+			input:      []string{"10", "20", "30"},
+			wantLength: 3,
+		},
+		{
+			name:       "Test length from several empty string",
+			input:      []string{"", "", ""},
+			wantLength: 3,
+		},
+		{
+			name:       "Test no length from empty list",
+			input:      []string{},
+			wantLength: 0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := NewDequeue[string](tt.input)
+			if list.length != tt.wantLength {
+				t.Errorf("expected = %v, want %v", list.length, tt.wantLength)
+			}
+		})
+	}
+}
+
+type testCaseLengthPushPop[T any] struct {
+	name       string
+	inputFunc  func(*DequeueList[T])
+	wantLength uint
+}
+
+func TestLengthFromPushPop(t *testing.T) {
+	tests := []testCaseLengthPushPop[string]{
+		{
+			name: "Test: push operation is same as pop",
+			inputFunc: func(list *DequeueList[string]) {
+				list.PushLeft("10")
+				list.PushRight("20")
+				list.PopLeft()
+				list.PopRight()
+
+			},
+			wantLength: 0,
+		},
+		{
+			name: "Test: push is more than pop",
+			inputFunc: func(list *DequeueList[string]) {
+				list.PushLeft("10")
+				list.PushRight("20")
+				list.PopLeft()
+			},
+			wantLength: 1,
+		},
+		{
+			name: "Test: pop is more than push",
+			inputFunc: func(list *DequeueList[string]) {
+				list.PushRight("20")
+				list.PushLeft("10")
+				list.PopRight()
+				list.PopRight()
+				list.PopRight()
+			},
+			wantLength: 0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := &DequeueList[string]{}
+			tt.inputFunc(list)
+			if list.length != tt.wantLength {
+				t.Errorf("expected = %v, want %v", list.length, tt.wantLength)
+			}
+		})
+	}
+}
