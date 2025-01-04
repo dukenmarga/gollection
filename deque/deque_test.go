@@ -5,14 +5,14 @@ import (
 	"testing"
 )
 
-type testCase[T any] struct {
+type testCasePush[T any] struct {
 	name         string
 	input        []T
 	wantDequeVal []T
 }
 
 func TestNewDequeueFromString(t *testing.T) {
-	tests := []testCase[string]{
+	tests := []testCasePush[string]{
 		{
 			name: "Test new dequeue list from string values",
 			input: []string{
@@ -55,7 +55,7 @@ func TestNewDequeueFromString(t *testing.T) {
 }
 
 func TestPushRight(t *testing.T) {
-	tests := []testCase[string]{
+	tests := []testCasePush[string]{
 		{
 			name: "Test push right using string values",
 			input: []string{
@@ -105,7 +105,7 @@ func TestPushRight(t *testing.T) {
 }
 
 func TestPushLeft(t *testing.T) {
-	tests := []testCase[string]{
+	tests := []testCasePush[string]{
 		{
 			name: "Test push left using string values",
 			input: []string{
