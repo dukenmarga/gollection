@@ -20,6 +20,14 @@ type DequeueList[T any] struct {
 	tail *Node[T]
 }
 
+func NewDequeue[T any](list []T) *DequeueList[T] {
+	deque := &DequeueList[T]{}
+	for _, value := range list {
+		deque.PushRight(value)
+	}
+	return deque
+}
+
 // PushLeft adds a new node to the left of the list.
 // The new added node becomes the new head of the list.
 func (list *DequeueList[T]) PushLeft(value T) {
