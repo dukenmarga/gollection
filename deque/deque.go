@@ -103,7 +103,13 @@ func (list *DequeueList[T]) PushRight(value T) {
 }
 
 // PopLeft removes the head of the list and returns the value of the removed node.
-func (list *DequeueList[T]) PopLeft() T {
+func (list *DequeueList[T]) PopLeft() (T, error) {
+	// return empty value if the list is empty
+	if list.head == nil {
+		var empty T
+		return empty, fmt.Errorf("list is empty")
+	}
+
 	// get current head
 	popNode := list.head
 
@@ -121,7 +127,7 @@ func (list *DequeueList[T]) PopLeft() T {
 	// update length
 	list.length--
 
-	return popNode.value
+	return popNode.value, nil
 }
 
 func (list *DequeueList[T]) PopRight() T {
