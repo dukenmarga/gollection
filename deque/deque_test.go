@@ -23,6 +23,22 @@ func TestNewDequeueFromString(t *testing.T) {
 				"20",
 			},
 		},
+		{
+			name: "Test new dequeue list from several empty string",
+			input: []string{
+				"",
+				"",
+			},
+			wantDequeVal: []string{
+				"",
+				"",
+			},
+		},
+		{
+			name:         "Test new dequeue list from empty list",
+			input:        []string{},
+			wantDequeVal: []string{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
