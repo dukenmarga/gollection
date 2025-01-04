@@ -21,6 +21,21 @@ type DequeueList[T any] struct {
 	length uint
 }
 
+// Clear removes all nodes from the list
+func (list *DequeueList[T]) Clear() {
+	current := list.head
+
+	for current != nil {
+		next := current.next
+		current.next = nil
+		current = next
+	}
+
+	list.head = nil
+	list.tail = nil
+	list.length = 0
+}
+
 func NewDequeue[T any](list []T) *DequeueList[T] {
 	deque := &DequeueList[T]{}
 	for _, value := range list {
