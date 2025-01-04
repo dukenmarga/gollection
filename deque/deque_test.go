@@ -99,3 +99,49 @@ func TestPushRight(t *testing.T) {
 		})
 	}
 }
+
+func TestPushLeft(t *testing.T) {
+	tests := []testCase[string]{
+		{
+			name: "Test push left using string values",
+			input: []string{
+				"10",
+				"20",
+			},
+			wantDequeVal: []string{
+				"20",
+				"10",
+			},
+		},
+		{
+			name: "Test push left from several empty string",
+			input: []string{
+				"",
+				"",
+			},
+			wantDequeVal: []string{
+				"",
+				"",
+			},
+		},
+		{
+			name:         "Test no push left from empty list",
+			input:        []string{},
+			wantDequeVal: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := NewDequeue[string]([]string{})
+			for _, input := range tt.input {
+				list.PushLeft(input)
+			}
+			for _, wantVal := range tt.wantDequeVal {
+				pop := list.PopLeft()
+				if wantVal != pop {
+					t.Errorf("expected = %v, want %v", pop, wantVal)
+				}
+			}
+		})
+	}
+}
