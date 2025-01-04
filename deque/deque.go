@@ -16,8 +16,9 @@ type Node[T any] struct {
 // For the sake of consistency of definition of head/tail terms,
 // the head is always on the left side, while tail is always on the right side.
 type DequeueList[T any] struct {
-	head *Node[T]
-	tail *Node[T]
+	head   *Node[T]
+	tail   *Node[T]
+	length uint
 }
 
 func NewDequeue[T any](list []T) *DequeueList[T] {
@@ -58,6 +59,9 @@ func (list *DequeueList[T]) PushLeft(value T) {
 
 		// set the new node as the new head
 		list.head = newNode
+
+		// update length
+		list.length++
 	}
 }
 
@@ -92,6 +96,9 @@ func (list *DequeueList[T]) PushRight(value T) {
 
 		// set the new node as the new tail
 		list.tail = newNode
+
+		// update length
+		list.length++
 	}
 }
 
@@ -111,6 +118,9 @@ func (list *DequeueList[T]) PopLeft() T {
 		list.head.prev = nil
 	}
 
+	// update length
+	list.length--
+
 	return popNode.value
 }
 
@@ -128,6 +138,9 @@ func (list *DequeueList[T]) PopRight() T {
 	if prev != nil {
 		list.tail.next = nil
 	}
+
+	// update length
+	list.length--
 
 	return popNode.value
 }
