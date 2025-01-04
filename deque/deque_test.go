@@ -47,7 +47,7 @@ func TestNewDequeueFromString(t *testing.T) {
 			for _, wantVal := range tt.wantDequeVal {
 				pop := got.PopLeft()
 				if wantVal != pop {
-					t.Errorf("NewDequeueList() = %v, want %v", pop, wantVal)
+					t.Errorf("expected = %v, want %v", pop, wantVal)
 				}
 			}
 		})
@@ -93,7 +93,7 @@ func TestPushRight(t *testing.T) {
 			for _, wantVal := range tt.wantDequeVal {
 				pop := list.PopLeft()
 				if wantVal != pop {
-					t.Errorf("NewDequeueList() = %v, want %v", pop, wantVal)
+					t.Errorf("expected = %v, want %v", pop, wantVal)
 				}
 			}
 		})
