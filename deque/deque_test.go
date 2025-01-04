@@ -368,3 +368,44 @@ func TestLengthFromPushPop(t *testing.T) {
 		})
 	}
 }
+
+type testCaseClear[T any] struct {
+	name         string
+	inputFunc    func(*DequeueList[T])
+	wantLength   uint
+	wantDequeVal []T
+}
+
+func TestClear(t *testing.T) {
+	tests := []testCaseClear[string]{
+		{
+			name: "Test clear",
+			inputFunc: func(list *DequeueList[string]) {
+				list.PushLeft("10")
+				list.PushRight("20")
+				list.Clear()
+			},
+			wantLength:   0,
+			wantDequeVal: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := &DequeueList[string]{}
+			tt.inputFunc(list)
+			if list.length != tt.wantLength {
+				t.Errorf("expected = %v, want %v", list.length, tt.wantLength)
+			}
+
+			currentNode := list.head
+			counter := 0
+			for currentNode != nil {
+				if currentNode.value != tt.wantDequeVal[counter] {
+					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+				}
+				currentNode = currentNode.next
+				counter++
+			}
+		})
+	}
+}
