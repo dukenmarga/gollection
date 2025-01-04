@@ -6,8 +6,8 @@ import "fmt"
 // The value can be anything, from int to string to struct or even map.
 type Node[T any] struct {
 	value T
-	next  *Node[T]
 	prev  *Node[T]
+	next  *Node[T]
 }
 
 // DequeueList contains the head and tail nodes.
