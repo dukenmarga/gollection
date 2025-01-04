@@ -1,6 +1,7 @@
 package deque
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -45,7 +46,7 @@ func TestNewDequeueFromString(t *testing.T) {
 
 			got := NewDequeue[string](tt.input)
 			for _, wantVal := range tt.wantDequeVal {
-				pop := got.PopLeft()
+				pop, _ := got.PopLeft()
 				if wantVal != pop {
 					t.Errorf("expected = %v, want %v", pop, wantVal)
 				}
@@ -91,7 +92,7 @@ func TestPushRight(t *testing.T) {
 				list.PushRight(input)
 			}
 			for _, wantVal := range tt.wantDequeVal {
-				pop := list.PopLeft()
+				pop, _ := list.PopLeft()
 				if wantVal != pop {
 					t.Errorf("expected = %v, want %v", pop, wantVal)
 				}
@@ -137,10 +138,79 @@ func TestPushLeft(t *testing.T) {
 				list.PushLeft(input)
 			}
 			for _, wantVal := range tt.wantDequeVal {
-				pop := list.PopLeft()
+				pop, _ := list.PopLeft()
 				if wantVal != pop {
 					t.Errorf("expected = %v, want %v", pop, wantVal)
 				}
+			}
+		})
+	}
+}
+
+type testCasePop[T any] struct {
+	name         string
+	input        []T
+	wantDequeVal []T
+	wantPop      T
+	wantErr      error
+}
+
+func TestPopLeft(t *testing.T) {
+	tests := []testCasePop[string]{
+		{
+			name: "Test pop left using string values",
+			input: []string{
+				"10",
+				"20",
+				"30",
+			},
+			wantDequeVal: []string{
+				"20",
+				"30",
+			},
+			wantPop: "10",
+			wantErr: nil,
+		},
+		{
+			name: "Test pop left from several empty string",
+			input: []string{
+				"",
+				"",
+			},
+			wantDequeVal: []string{
+				"",
+			},
+			wantPop: "",
+			wantErr: nil,
+		},
+		{
+			name:         "Test no pop left from empty list",
+			input:        []string{},
+			wantDequeVal: []string{},
+			wantPop:      "",
+			wantErr:      fmt.Errorf("list is empty"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := NewDequeue[string](tt.input)
+
+			pop, err := list.PopLeft()
+			if pop != tt.wantPop {
+				t.Errorf("expected = %v, want %v", pop, tt.wantPop)
+			}
+			if err != nil && err.Error() != tt.wantErr.Error() {
+				t.Errorf("expected = %v, want %v", err, tt.wantErr)
+			}
+
+			currentNode := list.head
+			counter := 0
+			for currentNode != nil {
+				if currentNode.value != tt.wantDequeVal[counter] {
+					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+				}
+				currentNode = currentNode.next
+				counter++
 			}
 		})
 	}
