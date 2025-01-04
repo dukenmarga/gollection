@@ -37,32 +37,30 @@ func (list *DequeueList[T]) PushLeft(value T) {
 		value: value,
 	}
 
-	// check if the list is empty (no head and no tail).
-	// if so, set the head and tail to the new node
+	// If the list is empty (no tail),
+	// set the tail to the new node
 	if list.tail == nil {
 		list.tail = newNode
 	}
-	if list.head == nil {
-		list.head = newNode
-	}
 
-	// If the list is not empty (head is not nil)
+	// get the current head
+	currHead := list.head
+
+	// If the list is not empty
 	if list.head != nil {
-		// get the current head
-		currHead := list.head
-
 		// set the new node's on the left side to the current head
 		currHead.prev = newNode
 
 		// set the current head's on the right side to the new node
 		newNode.next = currHead
-
-		// set the new node as the new head
-		list.head = newNode
-
-		// update length
-		list.length++
 	}
+
+	// set new node as the new head
+	list.head = newNode
+
+	// update length
+	list.length++
+
 }
 
 // PushRight adds a new node to the right of the list.
@@ -73,33 +71,29 @@ func (list *DequeueList[T]) PushRight(value T) {
 		value: value,
 	}
 
-	// check if the list is empty (no head and no tail).
-	// if so, set the head and tail to the new node
-	if list.tail == nil {
-		list.tail = newNode
-	}
+	// If the list is empty (no head),
+	// set the head to the new node
 	if list.head == nil {
 		list.head = newNode
-		return
 	}
 
-	// If the list is not empty (tail is not nil)
-	if list.tail != nil {
-		// get the current tail
-		currTail := list.tail
+	// get the current tail
+	currTail := list.tail
 
+	// If the list is not empty
+	if list.tail != nil {
 		// set the new node's on the right side to the current tail
 		currTail.next = newNode
 
 		// set the current tail's on the left side to the new node
 		newNode.prev = currTail
-
-		// set the new node as the new tail
-		list.tail = newNode
-
-		// update length
-		list.length++
 	}
+
+	// set new node as the new tail
+	list.tail = newNode
+
+	// update length
+	list.length++
 }
 
 // PopLeft removes the head of the list and returns the value of the removed node.
