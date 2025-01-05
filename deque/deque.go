@@ -21,6 +21,22 @@ type DequeueList[T any] struct {
 	length uint
 }
 
+func (list *DequeueList[T]) At(index uint) (T, error) {
+	current := list.head
+
+	var pos uint = 0
+
+	for current != nil {
+		if pos == index {
+			return current.value, nil
+		}
+		current = current.next
+		pos++
+	}
+	var empty T
+	return empty, fmt.Errorf("index out of range: %v (total length: %v)", index, list.length)
+}
+
 // Clear removes all nodes from the list
 func (list *DequeueList[T]) Clear() {
 	current := list.head
