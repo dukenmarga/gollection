@@ -409,3 +409,52 @@ func TestClear(t *testing.T) {
 		})
 	}
 }
+
+type testCaseAt[T any] struct {
+	name        string
+	input       []T
+	wantNodeVal T
+	wantErr     error
+}
+
+func TestAt(t *testing.T) {
+	tests := []testCaseAt[string]{
+		{
+			name: "Test at using string values",
+			input: []string{
+				"10",
+				"20",
+				"30",
+			},
+			wantNodeVal: "20",
+			wantErr:     nil,
+		},
+		{
+			name: "Test at from several empty string",
+			input: []string{
+				"",
+				"",
+			},
+			wantNodeVal: "",
+			wantErr:     nil,
+		},
+		{
+			name:        "Test no length from empty list",
+			input:       []string{},
+			wantNodeVal: "",
+			wantErr:     fmt.Errorf("index out of range: 1 (total length: 0)"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			list := NewDequeue[string](tt.input)
+			node, err := list.At(1)
+			if node != tt.wantNodeVal {
+				t.Errorf("expected = %v, want %v", node, tt.wantNodeVal)
+			}
+			if err != nil && err.Error() != tt.wantErr.Error() {
+				t.Errorf("expected = %v, want %v", err, tt.wantErr)
+			}
+		})
+	}
+}
