@@ -47,7 +47,7 @@ func TestNewDequeueFromString(t *testing.T) {
 			for _, wantVal := range tt.wantDequeVal {
 				pop, _ := got.PopLeft()
 				if wantVal != pop {
-					t.Errorf("expected = %v, want %v", pop, wantVal)
+					t.Errorf("actual = %v, want %v", pop, wantVal)
 				}
 			}
 		})
@@ -95,7 +95,7 @@ func TestPushRight(t *testing.T) {
 			counter := 0
 			for currentNode != nil {
 				if currentNode.value != tt.wantDequeVal[counter] {
-					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+					t.Errorf("actual = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
 				}
 				currentNode = currentNode.next
 				counter++
@@ -145,7 +145,7 @@ func TestPushLeft(t *testing.T) {
 			counter := 0
 			for currentNode != nil {
 				if currentNode.value != tt.wantDequeVal[counter] {
-					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+					t.Errorf("actual = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
 				}
 				currentNode = currentNode.next
 				counter++
@@ -204,17 +204,17 @@ func TestPopLeft(t *testing.T) {
 
 			pop, err := list.PopLeft()
 			if pop != tt.wantPop {
-				t.Errorf("expected = %v, want %v", pop, tt.wantPop)
+				t.Errorf("actual = %v, want %v", pop, tt.wantPop)
 			}
 			if err != nil && err.Error() != tt.wantErr.Error() {
-				t.Errorf("expected = %v, want %v", err, tt.wantErr)
+				t.Errorf("actual = %v, want %v", err, tt.wantErr)
 			}
 
 			currentNode := list.head
 			counter := 0
 			for currentNode != nil {
 				if currentNode.value != tt.wantDequeVal[counter] {
-					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+					t.Errorf("actual = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
 				}
 				currentNode = currentNode.next
 				counter++
@@ -265,17 +265,17 @@ func TestPopRight(t *testing.T) {
 
 			pop, err := list.PopRight()
 			if pop != tt.wantPop {
-				t.Errorf("expected = %v, want %v", pop, tt.wantPop)
+				t.Errorf("actual = %v, want %v", pop, tt.wantPop)
 			}
 			if err != nil && err.Error() != tt.wantErr.Error() {
-				t.Errorf("expected = %v, want %v", err, tt.wantErr)
+				t.Errorf("actual = %v, want %v", err, tt.wantErr)
 			}
 
 			currentNode := list.head
 			counter := 0
 			for currentNode != nil {
 				if currentNode.value != tt.wantDequeVal[counter] {
-					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+					t.Errorf("actual = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
 				}
 				currentNode = currentNode.next
 				counter++
@@ -312,7 +312,7 @@ func TestLengthFromSlice(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			list := NewDequeue[string](tt.input)
 			if list.length != tt.wantLength {
-				t.Errorf("expected = %v, want %v", list.length, tt.wantLength)
+				t.Errorf("actual = %v, want %v", list.length, tt.wantLength)
 			}
 		})
 	}
@@ -363,7 +363,7 @@ func TestLengthFromPushPop(t *testing.T) {
 			list := &DequeueList[string]{}
 			tt.inputFunc(list)
 			if list.length != tt.wantLength {
-				t.Errorf("expected = %v, want %v", list.length, tt.wantLength)
+				t.Errorf("actual = %v, want %v", list.length, tt.wantLength)
 			}
 		})
 	}
@@ -394,14 +394,14 @@ func TestClear(t *testing.T) {
 			list := &DequeueList[string]{}
 			tt.inputFunc(list)
 			if list.length != tt.wantLength {
-				t.Errorf("expected = %v, want %v", list.length, tt.wantLength)
+				t.Errorf("actual = %v, want %v", list.length, tt.wantLength)
 			}
 
 			currentNode := list.head
 			counter := 0
 			for currentNode != nil {
 				if currentNode.value != tt.wantDequeVal[counter] {
-					t.Errorf("expected = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
+					t.Errorf("actual = %v, want %v", currentNode.value, tt.wantDequeVal[counter])
 				}
 				currentNode = currentNode.next
 				counter++
@@ -450,10 +450,10 @@ func TestAt(t *testing.T) {
 			list := NewDequeue[string](tt.input)
 			node, err := list.At(1)
 			if node != tt.wantNodeVal {
-				t.Errorf("expected = %v, want %v", node, tt.wantNodeVal)
+				t.Errorf("actual = %v, want %v", node, tt.wantNodeVal)
 			}
 			if err != nil && err.Error() != tt.wantErr.Error() {
-				t.Errorf("expected = %v, want %v", err, tt.wantErr)
+				t.Errorf("actual = %v, want %v", err, tt.wantErr)
 			}
 		})
 	}
