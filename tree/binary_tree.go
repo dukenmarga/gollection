@@ -1,17 +1,17 @@
 package tree
 
 import (
+	"cmp"
 	"fmt"
-	"reflect"
 )
 
-type TreeNode[T any] struct {
+type TreeNode[T cmp.Ordered] struct {
 	value T
 	left  *TreeNode[T]
 	right *TreeNode[T]
 }
 
-func NewBinarySearchTree[T any](list []T) *TreeNode[T] {
+func NewBinarySearchTree[T cmp.Ordered](list []T) *TreeNode[T] {
 	if len(list) == 0 {
 		return nil
 	}
@@ -22,7 +22,7 @@ func NewBinarySearchTree[T any](list []T) *TreeNode[T] {
 	return root
 }
 
-func NewRoot[T any](value T) *TreeNode[T] {
+func NewRoot[T cmp.Ordered](value T) *TreeNode[T] {
 	return &TreeNode[T]{
 		value: value,
 	}
@@ -39,25 +39,18 @@ func (tree *TreeNode[T]) Insert(value T) {
 		return
 	}
 
-	expectedType := reflect.TypeOf(value)
-	expectedKind := expectedType.Kind()
-
-	switch expectedKind {
-	case reflect.Int:
-		valNumber := reflect.ValueOf(value).Int()
-		if valNumber <= reflect.ValueOf(tree.value).Int() {
-			if tree.left == nil {
-				tree.left = newTree
-				return
-			}
-			tree.left.Insert(value)
-		} else {
-			if tree.right == nil {
-				tree.right = newTree
-				return
-			}
-			tree.right.Insert(value)
+	if value <= tree.value {
+		if tree.left == nil {
+			tree.left = newTree
+			return
 		}
+		tree.left.Insert(value)
+	} else {
+		if tree.right == nil {
+			tree.right = newTree
+			return
+		}
+		tree.right.Insert(value)
 	}
 }
 
