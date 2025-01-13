@@ -1,20 +1,25 @@
 package tree
 
 import (
+	"cmp"
 	"testing"
 )
 
-type testTree[T any] struct {
+type testTree[K cmp.Ordered, V any] struct {
 	name        string
-	inputRest   []T
-	wantTreeVal []T
+	inputKeys   []K
+	inputVals   []V
+	wantTreeVal []V
 }
 
-func TestNewTree(t *testing.T) {
-	tests := []testTree[int]{
+func TestNewBinarySearchTreeFromArray(t *testing.T) {
+	tests := []testTree[int, int]{
 		{
 			name: "Test new tree int values (1 node)",
-			inputRest: []int{
+			inputKeys: []int{
+				10,
+			},
+			inputVals: []int{
 				10,
 			},
 			wantTreeVal: []int{
@@ -23,7 +28,11 @@ func TestNewTree(t *testing.T) {
 		},
 		{
 			name: "Test new tree int values (2 nodes incremental)",
-			inputRest: []int{
+			inputKeys: []int{
+				10,
+				20,
+			},
+			inputVals: []int{
 				10,
 				20,
 			},
@@ -34,7 +43,11 @@ func TestNewTree(t *testing.T) {
 		},
 		{
 			name: "Test new tree int values (2 nodes decremental)",
-			inputRest: []int{
+			inputKeys: []int{
+				20,
+				10,
+			},
+			inputVals: []int{
 				20,
 				10,
 			},
@@ -45,7 +58,11 @@ func TestNewTree(t *testing.T) {
 		},
 		{
 			name: "Test new tree from several zero int",
-			inputRest: []int{
+			inputKeys: []int{
+				0,
+				0,
+			},
+			inputVals: []int{
 				0,
 				0,
 			},
@@ -56,12 +73,15 @@ func TestNewTree(t *testing.T) {
 		},
 		{
 			name:        "Test new dequeue list from empty list",
-			inputRest:   []int{},
+			inputKeys:   []int{},
 			wantTreeVal: []int{},
 		},
 		{
 			name: "Test new tree int values many nodes",
-			inputRest: []int{
+			inputKeys: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputVals: []int{
 				5, 6, 2, 10, 12, 3, 1, 9,
 			},
 			wantTreeVal: []int{
@@ -71,11 +91,11 @@ func TestNewTree(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			root := NewBinarySearchTree[int](tt.inputRest)
+			root := NewBSTArray[int](tt.inputKeys, tt.inputVals)
 
 			got := root.InorderTraversal()
 			for i, wantVal := range tt.wantTreeVal {
-				if wantVal != got[i] {
+				if wantVal != got[i][wantVal] {
 					t.Errorf("actual = %v, want %v", got[i], wantVal)
 				}
 			}

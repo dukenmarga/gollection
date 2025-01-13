@@ -5,31 +5,37 @@ import (
 	"fmt"
 )
 
-type TreeNode[T cmp.Ordered] struct {
-	value T
-	left  *TreeNode[T]
-	right *TreeNode[T]
+type TreeNode[K cmp.Ordered, V any] struct {
+	key   K
+	value V
+	left  *TreeNode[K, V]
+	right *TreeNode[K, V]
 }
 
-func NewBinarySearchTree[T cmp.Ordered](list []T) *TreeNode[T] {
-	if len(list) == 0 {
+func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *TreeNode[K, V] {
+	if len(keys) == 0 {
 		return nil
 	}
-	root := NewRoot(list[0])
-	for i := 1; i < len(list); i++ {
-		root.Insert(list[i])
+	if len(values) == 0 {
+		return nil
+	}
+	root := NewBSTRoot(keys[0], values[0])
+	for i := 1; i < len(keys); i++ {
+		root.Insert(keys[i], values[i])
 	}
 	return root
 }
 
-func NewRoot[T cmp.Ordered](value T) *TreeNode[T] {
-	return &TreeNode[T]{
+func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *TreeNode[K, V] {
+	return &TreeNode[K, V]{
+		key:   key,
 		value: value,
 	}
 }
 
-func (tree *TreeNode[T]) Insert(value T) {
-	newTree := &TreeNode[T]{
+func (tree *TreeNode[K, V]) Insert(key K, value V) {
+	newTree := &TreeNode[K, V]{
+		key:   key,
 		value: value,
 	}
 	// If this is the root
@@ -39,22 +45,22 @@ func (tree *TreeNode[T]) Insert(value T) {
 		return
 	}
 
-	if value <= tree.value {
+	if key <= tree.key {
 		if tree.left == nil {
 			tree.left = newTree
 			return
 		}
-		tree.left.Insert(value)
+		tree.left.Insert(key, value)
 	} else {
 		if tree.right == nil {
 			tree.right = newTree
 			return
 		}
-		tree.right.Insert(value)
+		tree.right.Insert(key, value)
 	}
 }
 
-func (tree *TreeNode[T]) PrintInorderTraversalAsList() []T {
+func (tree *TreeNode[K, V]) PrintInorderTraversalAsList() []map[K]V {
 	fmt.Printf("Inorder Traversal:\n")
 	list := tree.InorderTraversal()
 	fmt.Printf("%v", list)
@@ -62,14 +68,15 @@ func (tree *TreeNode[T]) PrintInorderTraversalAsList() []T {
 	return list
 }
 
-func (tree *TreeNode[T]) InorderTraversal() []T {
+func (tree *TreeNode[K, V]) InorderTraversal() []map[K]V {
 	if tree == nil {
-		return []T{}
+		return []map[K]V{}
 	}
 
 	left := tree.left.InorderTraversal()
+	key := tree.key
 	value := tree.value
 	right := tree.right.InorderTraversal()
 
-	return append(left, append([]T{value}, right...)...)
+	return append(left, append([]map[K]V{{key: value}}, right...)...)
 }
