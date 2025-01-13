@@ -95,7 +95,7 @@ func TestNewBinarySearchTreeFromArray(t *testing.T) {
 
 			got := root.InorderTraversal()
 			for i, wantVal := range tt.wantTreeVal {
-				if wantVal != got[i][wantVal] {
+				if wantVal != got[i].value {
 					t.Errorf("actual = %v, want %v", got[i], wantVal)
 				}
 			}

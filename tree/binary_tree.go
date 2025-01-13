@@ -60,23 +60,20 @@ func (tree *TreeNode[K, V]) Insert(key K, value V) {
 	}
 }
 
-func (tree *TreeNode[K, V]) PrintInorderTraversalAsList() []map[K]V {
+func (tree *TreeNode[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("Inorder Traversal:\n")
 	list := tree.InorderTraversal()
 	fmt.Printf("%v", list)
 	fmt.Printf("\n")
-	return list
 }
 
-func (tree *TreeNode[K, V]) InorderTraversal() []map[K]V {
+func (tree *TreeNode[K, V]) InorderTraversal() []TreeNode[K, V] {
 	if tree == nil {
-		return []map[K]V{}
+		return []TreeNode[K, V]{}
 	}
 
 	left := tree.left.InorderTraversal()
-	key := tree.key
-	value := tree.value
 	right := tree.right.InorderTraversal()
 
-	return append(left, append([]map[K]V{{key: value}}, right...)...)
+	return append(left, append([]TreeNode[K, V]{*tree}, right...)...)
 }
