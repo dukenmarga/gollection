@@ -33,8 +33,10 @@ func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
 }
 
 // Add a node to the tree. Usually this function is called
-// by root node and will add the node to the appropriate place
-// in the tree.
+// by root node, but it can be called by any node.
+// If called by non-root node, it will add the new node under
+// the parent node and probably will break the BST rule if the
+// new node is not in the correct order under the root.
 func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
 	newTree := &BinarySearchTree[K, V]{
 		NodeTree: &NodeTree[K, V]{
