@@ -21,7 +21,7 @@ func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *TreeNode[K, V] {
 	}
 	root := NewBSTRoot(keys[0], values[0])
 	for i := 1; i < len(keys); i++ {
-		root.Insert(keys[i], values[i])
+		root.Add(keys[i], values[i])
 	}
 	return root
 }
@@ -33,7 +33,10 @@ func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *TreeNode[K, V] {
 	}
 }
 
-func (tree *TreeNode[K, V]) Insert(key K, value V) {
+// Add a node to the tree. Usually this function is called
+// by root node and will add the node to the appropriate place
+// in the tree.
+func (tree *TreeNode[K, V]) Add(key K, value V) {
 	newTree := &TreeNode[K, V]{
 		key:   key,
 		value: value,
@@ -50,13 +53,13 @@ func (tree *TreeNode[K, V]) Insert(key K, value V) {
 			tree.left = newTree
 			return
 		}
-		tree.left.Insert(key, value)
+		tree.left.Add(key, value)
 	} else {
 		if tree.right == nil {
 			tree.right = newTree
 			return
 		}
-		tree.right.Insert(key, value)
+		tree.right.Add(key, value)
 	}
 }
 
