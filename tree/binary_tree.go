@@ -6,10 +6,7 @@ import (
 )
 
 type BinarySearchTree[K cmp.Ordered, V any] struct {
-	key   K
-	value V
-	left  *BinarySearchTree[K, V]
-	right *BinarySearchTree[K, V]
+	*NodeTree[K, V]
 }
 
 func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *BinarySearchTree[K, V] {
@@ -28,8 +25,10 @@ func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *BinarySearchTree[K
 
 func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
 	return &BinarySearchTree[K, V]{
-		key:   key,
-		value: value,
+		NodeTree: &NodeTree[K, V]{
+			key:   key,
+			value: value,
+		},
 	}
 }
 
@@ -38,8 +37,10 @@ func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
 // in the tree.
 func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
 	newTree := &BinarySearchTree[K, V]{
-		key:   key,
-		value: value,
+		NodeTree: &NodeTree[K, V]{
+			key:   key,
+			value: value,
+		},
 	}
 	// If this is the root
 	if tree == nil {
