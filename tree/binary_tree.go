@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-type TreeNode[K cmp.Ordered, V any] struct {
+type BinarySearchTree[K cmp.Ordered, V any] struct {
 	key   K
 	value V
-	left  *TreeNode[K, V]
-	right *TreeNode[K, V]
+	left  *BinarySearchTree[K, V]
+	right *BinarySearchTree[K, V]
 }
 
-func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *TreeNode[K, V] {
+func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *BinarySearchTree[K, V] {
 	if len(keys) == 0 {
 		return nil
 	}
@@ -26,8 +26,8 @@ func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *TreeNode[K, V] {
 	return root
 }
 
-func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *TreeNode[K, V] {
-	return &TreeNode[K, V]{
+func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
+	return &BinarySearchTree[K, V]{
 		key:   key,
 		value: value,
 	}
@@ -36,8 +36,8 @@ func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *TreeNode[K, V] {
 // Add a node to the tree. Usually this function is called
 // by root node and will add the node to the appropriate place
 // in the tree.
-func (tree *TreeNode[K, V]) Add(key K, value V) {
-	newTree := &TreeNode[K, V]{
+func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
+	newTree := &BinarySearchTree[K, V]{
 		key:   key,
 		value: value,
 	}
@@ -63,20 +63,20 @@ func (tree *TreeNode[K, V]) Add(key K, value V) {
 	}
 }
 
-func (tree *TreeNode[K, V]) DebugInorderTraversalAsList() {
+func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("Inorder Traversal:\n")
 	list := tree.InorderTraversal()
 	fmt.Printf("%v", list)
 	fmt.Printf("\n")
 }
 
-func (tree *TreeNode[K, V]) InorderTraversal() []TreeNode[K, V] {
+func (tree *BinarySearchTree[K, V]) InorderTraversal() []BinarySearchTree[K, V] {
 	if tree == nil {
-		return []TreeNode[K, V]{}
+		return []BinarySearchTree[K, V]{}
 	}
 
 	left := tree.left.InorderTraversal()
 	right := tree.right.InorderTraversal()
 
-	return append(left, append([]TreeNode[K, V]{*tree}, right...)...)
+	return append(left, append([]BinarySearchTree[K, V]{*tree}, right...)...)
 }
