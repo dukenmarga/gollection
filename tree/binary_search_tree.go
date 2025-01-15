@@ -66,6 +66,21 @@ func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
 	}
 }
 
+func (tree *BinarySearchTree[K, V]) Search(key K) (*BinarySearchTree[K, V], error) {
+	if tree == nil {
+		return nil, fmt.Errorf("key not found")
+	}
+
+	if tree.key == key {
+		return tree, nil
+	}
+	if key <= tree.key {
+		return tree.left.Search(key)
+	} else {
+		return tree.right.Search(key)
+	}
+}
+
 func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("Inorder Traversal:\n")
 	list := tree.InorderTraversal()

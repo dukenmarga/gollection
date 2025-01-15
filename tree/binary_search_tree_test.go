@@ -194,3 +194,59 @@ func TestNewBinarySearchTreeRoot(t *testing.T) {
 		})
 	}
 }
+
+type testBSTSearching[K cmp.Ordered, V any] struct {
+	name           string
+	inputKeys      []K
+	inputVals      []V
+	inputSearchVal V
+	wantError      bool
+	wantSearchVal  V
+}
+
+func TestSearchBinaryTreeSearching(t *testing.T) {
+	tests := []testBSTSearching[int, int]{
+		{
+			name: "Test search binary tree: search from several items",
+			inputKeys: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputVals: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputSearchVal: 1,
+			wantError:      false,
+			wantSearchVal:  1,
+		},
+		{
+			name: "Test search binary tree: search but item not found",
+			inputKeys: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputVals: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputSearchVal: 99,
+			wantError:      true,
+			wantSearchVal:  0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Add root
+			root := NewBSTArray[int](tt.inputKeys, tt.inputVals)
+			got, err := root.Search(tt.inputSearchVal)
+
+			if tt.wantError {
+				if err == nil {
+					t.Errorf("actual = %v, want %v", err == nil, tt.wantError)
+				}
+			} else {
+				if got.value != tt.wantSearchVal {
+					t.Errorf("actual = %v, want %v", got.value, tt.wantSearchVal)
+				}
+			}
+
+		})
+	}
+}
