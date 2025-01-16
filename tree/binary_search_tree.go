@@ -6,7 +6,7 @@ import (
 )
 
 type BinarySearchTree[K cmp.Ordered, V any] struct {
-	*NodeTree[K, V]
+	*TreeNode[K, V]
 }
 
 func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *BinarySearchTree[K, V] {
@@ -25,7 +25,7 @@ func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *BinarySearchTree[K
 
 func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
 	return &BinarySearchTree[K, V]{
-		NodeTree: &NodeTree[K, V]{
+		TreeNode: &TreeNode[K, V]{
 			key:   key,
 			value: value,
 		},
@@ -39,7 +39,7 @@ func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
 // new node is not in the correct order under the root.
 func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
 	newNode := &BinarySearchTree[K, V]{
-		NodeTree: &NodeTree[K, V]{
+		TreeNode: &TreeNode[K, V]{
 			key:   key,
 			value: value,
 		},
@@ -135,7 +135,7 @@ func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("Inorder Traversal:\n")
 	list := tree.InorderTraversal()
 	for _, node := range list {
-		fmt.Printf("%+v", node.NodeTree)
+		fmt.Printf("%+v", node.TreeNode)
 		fmt.Printf("\n")
 	}
 	fmt.Printf("\n")
