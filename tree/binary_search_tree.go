@@ -38,31 +38,33 @@ func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
 // the parent node and probably will break the BST rule if the
 // new node is not in the correct order under the root.
 func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
-	newTree := &BinarySearchTree[K, V]{
+	newNode := &BinarySearchTree[K, V]{
 		NodeTree: &NodeTree[K, V]{
 			key:   key,
 			value: value,
 		},
 	}
-	// If this is the root
-	if tree == nil {
-		tree = newTree
-		fmt.Printf("Root is: %+v", tree)
+
+	tree.AddNode(newNode)
+}
+
+func (tree *BinarySearchTree[K, V]) AddNode(node *BinarySearchTree[K, V]) {
+	if node == nil {
 		return
 	}
 
-	if key <= tree.key {
+	if node.key <= tree.key {
 		if tree.left == nil {
-			tree.left = newTree
+			tree.left = node
 			return
 		}
-		tree.left.Add(key, value)
+		tree.left.AddNode(node)
 	} else {
 		if tree.right == nil {
-			tree.right = newTree
+			tree.right = node
 			return
 		}
-		tree.right.Add(key, value)
+		tree.right.AddNode(node)
 	}
 }
 
