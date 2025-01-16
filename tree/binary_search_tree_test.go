@@ -250,3 +250,66 @@ func TestSearchBinaryTreeSearching(t *testing.T) {
 		})
 	}
 }
+
+type testTreeDelete[K cmp.Ordered, V any] struct {
+	name           string
+	inputKeys      []K
+	inputVals      []V
+	inputDeleteKey K
+	wantError      bool
+	wantTreeVal    []V
+}
+
+func TestBinarySearchTreeDeleteNode(t *testing.T) {
+	tests := []testTreeDelete[int, int]{
+		{
+			name: "Test delete binary tree: delete from several items",
+			inputKeys: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputVals: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputDeleteKey: 6,
+			wantError:      false,
+			wantTreeVal: []int{
+				1, 2, 3, 5, 9, 10, 12,
+			},
+		},
+		{
+			name: "Test delete binary tree: delete but item not found",
+			inputKeys: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputVals: []int{
+				5, 6, 2, 10, 12, 3, 1, 9,
+			},
+			inputDeleteKey: 99,
+			wantError:      true,
+			wantTreeVal: []int{
+				1, 2, 3, 5, 6, 9, 10, 12,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Add root
+			root := NewBSTArray[int](tt.inputKeys, tt.inputVals)
+			err := root.Delete(tt.inputDeleteKey)
+
+			if tt.wantError {
+				if err == nil {
+					t.Errorf("actual = %v, want %v", err == nil, tt.wantError)
+				}
+			} else {
+				got := root.InorderTraversal()
+				for i, wantVal := range tt.wantTreeVal {
+					if wantVal != got[i].value {
+						t.Errorf("actual = %v, want %v", got[i].value, wantVal)
+					}
+				}
+			}
+
+		})
+	}
+}
