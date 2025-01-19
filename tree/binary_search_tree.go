@@ -55,18 +55,20 @@ func (tree *BinarySearchTree[K, V]) AddNode(node *BinarySearchTree[K, V]) {
 		return
 	}
 
-	if node.key <= tree.key {
+	if node.key < tree.key {
 		if tree.left == nil {
 			tree.left = node
 			return
 		}
 		tree.left.AddNode(node)
-	} else {
+	} else if node.key > tree.key {
 		if tree.right == nil {
 			tree.right = node
 			return
 		}
 		tree.right.AddNode(node)
+	} else {
+		tree.value = node.value
 	}
 }
 

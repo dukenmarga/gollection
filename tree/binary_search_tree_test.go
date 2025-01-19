@@ -68,7 +68,6 @@ func TestNewBinarySearchTreeFromArray(t *testing.T) {
 			},
 			wantTreeVal: []int{
 				0,
-				0,
 			},
 		},
 		{
@@ -158,7 +157,6 @@ func TestNewBinarySearchTreeRoot(t *testing.T) {
 				0,
 			},
 			wantTreeVal: []int{
-				0,
 				0,
 			},
 		},
