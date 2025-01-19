@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-type testTree[K cmp.Ordered, V any] struct {
+type testBSTCreation[K cmp.Ordered, V any] struct {
 	name        string
 	inputKeys   []K
 	inputVals   []V
@@ -13,7 +13,7 @@ type testTree[K cmp.Ordered, V any] struct {
 }
 
 func TestNewBinarySearchTreeFromArray(t *testing.T) {
-	tests := []testTree[int, int]{
+	tests := []testBSTCreation[int, int]{
 		{
 			name: "Test new tree int values (1 node)",
 			inputKeys: []int{
@@ -103,7 +103,7 @@ func TestNewBinarySearchTreeFromArray(t *testing.T) {
 }
 
 func TestNewBinarySearchTreeRoot(t *testing.T) {
-	tests := []testTree[int, int]{
+	tests := []testBSTCreation[int, int]{
 		{
 			name: "Test new tree int values (1 node)",
 			inputKeys: []int{
@@ -249,7 +249,7 @@ func TestSearchBinaryTreeSearching(t *testing.T) {
 	}
 }
 
-type testTreeDelete[K cmp.Ordered, V any] struct {
+type testBSTDelete[K cmp.Ordered, V any] struct {
 	name           string
 	inputKeys      []K
 	inputVals      []V
@@ -259,7 +259,7 @@ type testTreeDelete[K cmp.Ordered, V any] struct {
 }
 
 func TestBinarySearchTreeDeleteNode(t *testing.T) {
-	tests := []testTreeDelete[int, int]{
+	tests := []testBSTDelete[int, int]{
 		{
 			name: "Test delete binary tree: delete from several items",
 			inputKeys: []int{
