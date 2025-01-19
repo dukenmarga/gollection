@@ -7,6 +7,8 @@ import (
 
 type BinarySearchTree[K cmp.Ordered, V any] struct {
 	*TreeNode[K, V]
+	left  *BinarySearchTree[K, V]
+	right *BinarySearchTree[K, V]
 }
 
 func NewBSTArray[K cmp.Ordered, V any](keys []K, values []V) *BinarySearchTree[K, V] {
