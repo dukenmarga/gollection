@@ -296,8 +296,8 @@ func TestBinarySearchTreeDeleteNode(t *testing.T) {
 			err := root.Delete(tt.inputDeleteKey)
 
 			if tt.wantError {
-				if err == nil {
-					t.Errorf("actual = %v, want %v", err == nil, tt.wantError)
+				if (err != nil) == tt.wantError {
+					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
 				}
 			} else {
 				got := root.InorderTraversal()
