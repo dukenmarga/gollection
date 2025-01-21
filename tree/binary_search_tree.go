@@ -91,46 +91,31 @@ func (tree *BinarySearchTree[K, V]) Search(key K) (*BinarySearchTree[K, V], erro
 // After deleting the node, the parent node
 // will re-add the node's children.
 func (tree *BinarySearchTree[K, V]) Delete(key K) error {
-	// parent will hold the parent node of the node to be deleted
-	var parent *BinarySearchTree[K, V]
-
-	// isLeft will be true if the node to be deleted is the left child
-	// of the parent
-	isLeft := false
-
-	// Find the node to be deleted
-	// At the end of the loop, tree is the node to be deleted
-	for tree != nil && tree.key != key {
-		parent = tree
-		if key <= tree.key {
-			tree = tree.left
-			isLeft = true
-		} else {
-			tree = tree.right
-		}
-	}
-
 	// If the node is not found, return an error
 	if tree == nil {
 		return fmt.Errorf("key not found")
 	}
 
-	// Set the tree.left as the new child of the parent
-	// to replace the deleted node.
-	// The position left or right is determined by isLeft
-	if isLeft {
-		parent.left = tree.left
-	} else {
-		parent.right = tree.left
+	if key < tree.key {
+		tree.left.Delete(key)
+	}
+	if key > tree.key {
+		tree.right.Delete(key)
 	}
 
-	// Re-add the right child of the deleted node.
-	// Above, we directly attach tree.left to the parent,
-	// since the node values are less than the tree.right.
-	// But, in the opposite case, we need to call AddNode
-	// for tree.right, so it can re-determine the position
-	// of the node under the new parent.
-	parent.AddNode(tree.right)
+	if key == tree.key {
+		// Set the tree.left as the new node
+		// replacing the deleted node.
+		// Then add the right child of the deleted node
+		// by calling AddNode, so it can re-determine
+		// the position of the node under the new parent.
+		if tree.left != nil {
+			*tree = *tree.left
+			tree.AddNode(tree.right)
+		} else {
+			*tree = *tree.right
+		}
+	}
 
 	return nil
 }
