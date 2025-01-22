@@ -206,3 +206,11 @@ func (list *DequeueList[T]) Debug() {
 		count++
 	}
 }
+
+func (list DequeueList[T]) IsEmpty() bool {
+	return list.length == 0
+}
+
+func (list DequeueList[T]) Length() uint {
+	return list.length
+}
