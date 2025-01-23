@@ -97,10 +97,16 @@ func (tree *BinarySearchTree[K, V]) Delete(key K) error {
 	}
 
 	if key < tree.key {
-		tree.left.Delete(key)
+		err := tree.left.Delete(key)
+		if err != nil {
+			return fmt.Errorf("%w", err)
+		}
 	}
 	if key > tree.key {
-		tree.right.Delete(key)
+		err := tree.right.Delete(key)
+		if err != nil {
+			return fmt.Errorf("%w", err)
+		}
 	}
 
 	if key == tree.key {
@@ -113,7 +119,12 @@ func (tree *BinarySearchTree[K, V]) Delete(key K) error {
 			*tree = *tree.left
 			tree.AddNode(tree.right)
 		} else {
-			*tree = *tree.right
+			if tree.right != nil {
+				*tree = *tree.right
+			}
+		}
+		if tree.left == nil && tree.right == nil {
+			return nil
 		}
 	}
 
