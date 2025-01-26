@@ -356,7 +356,7 @@ func TestAVLTreeSearching(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Add root
-			root := NewBSTArray[int](tt.inputKeys, tt.inputVals)
+			root := NewAVLTArray[int](tt.inputKeys, tt.inputVals)
 			got, err := root.Search(tt.inputSearchVal)
 
 			if tt.wantError {
