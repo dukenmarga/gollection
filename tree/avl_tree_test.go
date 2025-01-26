@@ -19,186 +19,82 @@ func TestNewAVLTreeFromArray(t *testing.T) {
 		{
 			name: "Test new tree: insert 15 for tree 1 (1A)",
 			inputKeys: []int{
-				20,
-				4,
-				15,
+				20, 4, 15,
 			},
 			inputVals: []int{
-				20,
-				4,
-				15,
+				20, 4, 15,
 			},
 			wantTreeVal: []int{
-				15,
-				4,
-				20,
+				15, 4, 20,
 			},
 		},
 		{
 			name: "Test new tree: insert 15 for tree 2 (2A)",
 			inputKeys: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				15,
+				20, 4, 26, 3, 9, 15,
 			},
 			inputVals: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				15,
+				20, 4, 26, 3, 9, 15,
 			},
 			wantTreeVal: []int{
-				9,
-				4,
-				20,
-				3,
-				15,
-				26,
+				9, 4, 20, 3, 15, 26,
 			},
 		},
 		{
 			name: "Test new tree: insert 15 for tree 3 (3A)",
 			inputKeys: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				21,
-				30,
-				2,
-				7,
-				11,
-				15,
+				20, 4, 26, 3, 9, 21, 30, 2, 7, 11, 15,
 			},
 			inputVals: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				21,
-				30,
-				2,
-				7,
-				11,
-				15,
+				20, 4, 26, 3, 9, 21, 30, 2, 7, 11, 15,
 			},
 			wantTreeVal: []int{
-				9,
-				4,
-				20,
-				3,
-				7,
-				11,
-				26,
-				2,
-				15,
-				21,
-				30,
+				9, 4, 20, 3, 7, 11, 26, 2, 15, 21, 30,
 			},
 		},
 		{
 			name: "Test new tree: insert 8 for tree 1 (1B)",
 			inputKeys: []int{
-				20,
-				4,
-				8,
+				20, 4, 8,
 			},
 			inputVals: []int{
-				20,
-				4,
-				8,
+				20, 4, 8,
 			},
 			wantTreeVal: []int{
-				8,
-				4,
-				20,
+				8, 4, 20,
 			},
 		},
 		{
 			name: "Test new tree: insert 8 for tree 2 (2B)",
 			inputKeys: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				8,
+				20, 4, 26, 3, 9, 8,
 			},
 			inputVals: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				8,
+				20, 4, 26, 3, 9, 8,
 			},
 			wantTreeVal: []int{
-				9,
-				4,
-				20,
-				3,
-				8,
-				26,
+				9, 4, 20, 3, 8, 26,
 			},
 		},
 		{
 			name: "Test new tree: insert 8 for tree 3 (3B)",
 			inputKeys: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				21,
-				30,
-				2,
-				7,
-				11,
-				8,
+				20, 4, 26, 3, 9, 21, 30, 2, 7, 11, 8,
 			},
 			inputVals: []int{
-				20,
-				4,
-				26,
-				3,
-				9,
-				21,
-				30,
-				2,
-				7,
-				11,
-				8,
+				20, 4, 26, 3, 9, 21, 30, 2, 7, 11, 8,
 			},
 			wantTreeVal: []int{
-				9,
-				4,
-				20,
-				3,
-				7,
-				11,
-				26,
-				2,
-				8,
-				21,
-				30,
+				9, 4, 20, 3, 7, 11, 26, 2, 8, 21, 30,
 			},
 		},
 		{
 			name: "Test new tree from several zero int",
 			inputKeys: []int{
-				0,
-				0,
+				0, 0,
 			},
 			inputVals: []int{
-				0,
-				0,
+				0, 0,
 			},
 			wantTreeVal: []int{
 				0,
@@ -243,42 +139,34 @@ func TestNewAVLTreeRoot(t *testing.T) {
 		{
 			name: "Test new tree int values (2 nodes incremental)",
 			inputKeys: []int{
-				10,
-				20,
+				10, 20,
 			},
 			inputVals: []int{
-				10,
-				20,
+				10, 20,
 			},
 			wantTreeVal: []int{
-				10,
-				20,
+				10, 20,
 			},
 		},
 		{
 			name: "Test new tree int values (2 nodes decremental)",
 			inputKeys: []int{
-				20,
-				10,
+				20, 10,
 			},
 			inputVals: []int{
-				20,
-				10,
+				20, 10,
 			},
 			wantTreeVal: []int{
-				10,
-				20,
+				10, 20,
 			},
 		},
 		{
 			name: "Test new tree from several zero int",
 			inputKeys: []int{
-				0,
-				0,
+				0, 0,
 			},
 			inputVals: []int{
-				0,
-				0,
+				0, 0,
 			},
 			wantTreeVal: []int{
 				0,
@@ -356,8 +244,8 @@ func TestAVLTreeSearching(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Add root
-			root := NewBSTArray[int](tt.inputKeys, tt.inputVals)
-			got, err := root.Search(tt.inputSearchVal)
+			root := NewAVLTArray[int](tt.inputKeys, tt.inputVals)
+			got, err := root.Find(tt.inputSearchVal)
 
 			if tt.wantError {
 				if err == nil {

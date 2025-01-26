@@ -72,19 +72,14 @@ func (tree *BinarySearchTree[K, V]) AddNode(node *BinarySearchTree[K, V]) {
 	}
 }
 
-func (tree *BinarySearchTree[K, V]) Search(key K) (*BinarySearchTree[K, V], error) {
-	if tree == nil {
-		return nil, fmt.Errorf("key not found")
+func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
+	fmt.Printf("Inorder Traversal:\n")
+	list := tree.InorderTraversal()
+	for _, node := range list {
+		fmt.Printf("%+v", node.TreeNode)
+		fmt.Printf("\n")
 	}
-
-	if tree.key == key {
-		return tree, nil
-	}
-	if key <= tree.key {
-		return tree.left.Search(key)
-	} else {
-		return tree.right.Search(key)
-	}
+	fmt.Printf("\n")
 }
 
 // Delete a node from the tree by key.
@@ -131,14 +126,19 @@ func (tree *BinarySearchTree[K, V]) Delete(key K) error {
 	return nil
 }
 
-func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
-	fmt.Printf("Inorder Traversal:\n")
-	list := tree.InorderTraversal()
-	for _, node := range list {
-		fmt.Printf("%+v", node.TreeNode)
-		fmt.Printf("\n")
+func (tree *BinarySearchTree[K, V]) Find(key K) (*BinarySearchTree[K, V], error) {
+	if tree == nil {
+		return nil, fmt.Errorf("key not found")
 	}
-	fmt.Printf("\n")
+
+	if tree.key == key {
+		return tree, nil
+	}
+	if key <= tree.key {
+		return tree.left.Find(key)
+	} else {
+		return tree.right.Find(key)
+	}
 }
 
 func (tree *BinarySearchTree[K, V]) InorderTraversal() []*BinarySearchTree[K, V] {

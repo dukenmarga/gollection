@@ -89,6 +89,54 @@ func (tree *AVLTree[K, V]) AddNode(node *AVLTree[K, V]) {
 	}
 }
 
+func (tree *AVLTree[K, V]) DebugInorderTraversalAsList() {
+	fmt.Printf("Inorder Traversal:\n")
+	list := tree.InorderTraversal()
+	for _, node := range list {
+		fmt.Printf("%+v", node.TreeNode)
+		fmt.Printf("\n")
+	}
+	fmt.Printf("\n")
+}
+
+func (tree *AVLTree[K, V]) DebugLevelOrderTraversalAsList() {
+	fmt.Printf("Level Order Traversal:\n")
+	list := tree.LevelOrderTraversal()
+	for _, node := range list {
+		fmt.Printf("%+v", node.TreeNode)
+		fmt.Printf("\n")
+	}
+	fmt.Printf("\n")
+}
+
+// Delete a node from the tree by key.
+// After deleting the node, the parent node
+// will re-add the node's children.
+func (tree *AVLTree[K, V]) Delete(key K) error {
+	var err error
+	_, err = delete(tree, key)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	return nil
+}
+
+func (tree *AVLTree[K, V]) Find(key K) (*AVLTree[K, V], error) {
+	if tree == nil {
+		return nil, fmt.Errorf("key not found")
+	}
+
+	if tree.key == key {
+		return tree, nil
+	}
+	if key <= tree.key {
+		return tree.left.Find(key)
+	} else {
+		return tree.right.Find(key)
+	}
+}
+
 // GetBalance calculate the difference of the left
 // height and right height.
 func (tree *AVLTree[K, V]) GetBalance() int {
@@ -103,35 +151,38 @@ func (tree *AVLTree[K, V]) Height() int {
 	return 1 + max(tree.left.Height(), tree.right.Height())
 }
 
-func (tree *AVLTree[K, V]) RotateRight() {
-	// Theoritically, RotateRight is called
-	// only when tree.left != nil.
-	// This is just to make sure to avoid
-	// panic/nil dereference
-	if tree.left == nil {
-		return
+func (tree *AVLTree[K, V]) InorderTraversal() []*AVLTree[K, V] {
+	if tree == nil {
+		return []*AVLTree[K, V]{}
 	}
 
-	// Get the new root temporarily and the old root
-	newRoot := *tree.left
-	oldRoot := *tree
+	left := tree.left.InorderTraversal()
+	right := tree.right.InorderTraversal()
 
-	// Set the old root's left to the new root's right.
-	// Set nil if the new root's right is nil
-	if newRoot.right != nil {
-		*oldRoot.left = *newRoot.right
-	} else {
-		oldRoot.left = nil
+	return append(left, append([]*AVLTree[K, V]{tree}, right...)...)
+}
+
+func (tree *AVLTree[K, V]) LevelOrderTraversal() []*AVLTree[K, V] {
+	if tree == nil {
+		return []*AVLTree[K, V]{}
 	}
 
-	// Set the new root's right to the old root.
-	if newRoot.right == nil {
-		newRoot.right = new(AVLTree[K, V])
+	var results []*AVLTree[K, V]
+	deq := deque.NewDequeue([]*AVLTree[K, V]{tree})
+	for !deq.IsEmpty() {
+		for deq.Length() > 0 {
+			node, _ := deq.PopLeft()
+			results = append(results, node)
+			if node.left != nil {
+				deq.PushRight(node.left)
+			}
+			if node.right != nil {
+				deq.PushRight(node.right)
+			}
+		}
 	}
-	*newRoot.right = oldRoot
 
-	// Set the current tree to the new root
-	*tree = newRoot
+	return results
 }
 
 func (tree *AVLTree[K, V]) RotateLeft() {
@@ -165,32 +216,35 @@ func (tree *AVLTree[K, V]) RotateLeft() {
 	*tree = newRoot
 }
 
-func (tree *AVLTree[K, V]) Search(key K) (*AVLTree[K, V], error) {
-	if tree == nil {
-		return nil, fmt.Errorf("key not found")
+func (tree *AVLTree[K, V]) RotateRight() {
+	// Theoritically, RotateRight is called
+	// only when tree.left != nil.
+	// This is just to make sure to avoid
+	// panic/nil dereference
+	if tree.left == nil {
+		return
 	}
 
-	if tree.key == key {
-		return tree, nil
-	}
-	if key <= tree.key {
-		return tree.left.Search(key)
+	// Get the new root temporarily and the old root
+	newRoot := *tree.left
+	oldRoot := *tree
+
+	// Set the old root's left to the new root's right.
+	// Set nil if the new root's right is nil
+	if newRoot.right != nil {
+		*oldRoot.left = *newRoot.right
 	} else {
-		return tree.right.Search(key)
-	}
-}
-
-// Delete a node from the tree by key.
-// After deleting the node, the parent node
-// will re-add the node's children.
-func (tree *AVLTree[K, V]) Delete(key K) error {
-	var err error
-	_, err = delete(tree, key)
-	if err != nil {
-		return fmt.Errorf("%w", err)
+		oldRoot.left = nil
 	}
 
-	return nil
+	// Set the new root's right to the old root.
+	if newRoot.right == nil {
+		newRoot.right = new(AVLTree[K, V])
+	}
+	*newRoot.right = oldRoot
+
+	// Set the current tree to the new root
+	*tree = newRoot
 }
 
 func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], error) {
@@ -243,69 +297,4 @@ func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], e
 		tree.RotateLeft()
 	}
 	return tree, nil
-}
-
-func (tree *AVLTree[K, V]) DebugInorderTraversalAsList() {
-	fmt.Printf("Inorder Traversal:\n")
-	list := tree.InorderTraversal()
-	for _, node := range list {
-		fmt.Printf("%+v", node.TreeNode)
-		fmt.Printf("\n")
-	}
-	fmt.Printf("\n")
-}
-
-func (tree *AVLTree[K, V]) InorderTraversal() []*AVLTree[K, V] {
-	if tree == nil {
-		return []*AVLTree[K, V]{}
-	}
-
-	left := tree.left.InorderTraversal()
-	right := tree.right.InorderTraversal()
-
-	return append(left, append([]*AVLTree[K, V]{tree}, right...)...)
-}
-
-func (tree *AVLTree[K, V]) DebugLevelOrderTraversalAsList() {
-	fmt.Printf("Level Order Traversal:\n")
-	list := tree.LevelOrderTraversal()
-	for _, node := range list {
-		fmt.Printf("%+v", node.TreeNode)
-		fmt.Printf("\n")
-	}
-	fmt.Printf("\n")
-}
-
-func (tree *AVLTree[K, V]) LevelOrderTraversal() []*AVLTree[K, V] {
-	if tree == nil {
-		return []*AVLTree[K, V]{}
-	}
-
-	var results []*AVLTree[K, V]
-	deq := deque.NewDequeue([]*AVLTree[K, V]{tree})
-	for !deq.IsEmpty() {
-		for deq.Length() > 0 {
-			node, _ := deq.PopLeft()
-			results = append(results, node)
-			if node.left != nil {
-				deq.PushRight(node.left)
-			}
-			if node.right != nil {
-				deq.PushRight(node.right)
-			}
-		}
-	}
-
-	return results
-}
-
-func (tree *AVLTree[K, V]) InorderTraversalHeights() []int {
-	if tree == nil {
-		return []int{}
-	}
-
-	left := tree.left.InorderTraversalHeights()
-	right := tree.right.InorderTraversalHeights()
-
-	return append(left, append([]int{tree.Height()}, right...)...)
 }

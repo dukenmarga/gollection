@@ -233,7 +233,7 @@ func TestSearchBinaryTreeSearching(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Add root
 			root := NewBSTArray[int](tt.inputKeys, tt.inputVals)
-			got, err := root.Search(tt.inputSearchVal)
+			got, err := root.Find(tt.inputSearchVal)
 
 			if tt.wantError {
 				if err == nil {
