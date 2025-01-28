@@ -512,3 +512,52 @@ func TestBSTreeAdd(t *testing.T) {
 		})
 	}
 }
+
+type testBSTreeClear[K cmp.Ordered, V any] struct {
+	name        string
+	inputKeys   []K
+	inputVals   []V
+	wantTreeVal []V
+}
+
+func TestBSTreeClear(t *testing.T) {
+	tests := []testBSTreeClear[int, int]{
+		{
+			name: "Test clear the tree 1",
+			inputKeys: []int{
+				2, 1, 4, 3, 5,
+			},
+			inputVals: []int{
+				2, 1, 4, 3, 5,
+			},
+			wantTreeVal: []int{},
+		},
+		{
+			name: "Test clear the tree 2",
+			inputKeys: []int{
+				6, 2, 9, 1, 4, 8, 11, 3, 5, 7, 10, 12, 13,
+			},
+			inputVals: []int{
+				6, 2, 9, 1, 4, 8, 11, 3, 5, 7, 10, 12, 13,
+			},
+			wantTreeVal: []int{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Add root
+			root := NewBSTArray[int](tt.inputKeys, tt.inputVals)
+			root = root.Clear()
+
+			got := root.LevelOrderTraversal()
+			if len(got) != len(tt.wantTreeVal) {
+				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
+			}
+			for i, wantVal := range tt.wantTreeVal {
+				if got[i].value != wantVal {
+					t.Errorf("actual = %v, want %v", got[i].value, wantVal)
+				}
+			}
+		})
+	}
+}

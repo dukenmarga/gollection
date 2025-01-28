@@ -81,6 +81,16 @@ func (tree *BinarySearchTree[K, V]) AddNode(node *BinarySearchTree[K, V]) error 
 	return nil
 }
 
+func (tree *BinarySearchTree[K, V]) Clear() *BinarySearchTree[K, V] {
+	if tree == nil {
+		return nil
+	}
+	tree.left = tree.left.Clear()
+	tree.right = tree.right.Clear()
+	tree = nil
+	return tree
+}
+
 func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("Inorder Traversal:\n")
 	list := tree.InorderTraversal()
