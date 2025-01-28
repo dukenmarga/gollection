@@ -290,12 +290,12 @@ func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], e
 	if key < tree.key {
 		tree.left, err = delete(tree.left, key)
 		if err != nil {
-			return nil, fmt.Errorf("%w", err)
+			return tree, fmt.Errorf("%w", err)
 		}
 	} else if key > tree.key {
 		tree.right, err = delete(tree.right, key)
 		if err != nil {
-			return nil, fmt.Errorf("%w", err)
+			return tree, fmt.Errorf("%w", err)
 		}
 	} else if key == tree.key {
 		// Set the tree.left as the new node
