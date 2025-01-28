@@ -41,7 +41,7 @@ func NewAVLTRoot[K cmp.Ordered, V any](key K, value V) *AVLTree[K, V] {
 // If called by non-root node, it will add the new node under
 // the parent node and probably will not create a balance
 // tree overall.
-func (tree *AVLTree[K, V]) Add(key K, value V) {
+func (tree *AVLTree[K, V]) Add(key K, value V) error {
 	newNode := &AVLTree[K, V]{
 		TreeNode: &TreeNode[K, V]{
 			key:   key,
@@ -49,26 +49,32 @@ func (tree *AVLTree[K, V]) Add(key K, value V) {
 		},
 	}
 
-	tree.AddNode(newNode)
+	err := tree.AddNode(newNode)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	return nil
 }
 
-func (tree *AVLTree[K, V]) AddNode(node *AVLTree[K, V]) {
+func (tree *AVLTree[K, V]) AddNode(node *AVLTree[K, V]) error {
 	if node == nil {
-		return
+		return nil
 	}
 
 	if node.key < tree.key {
 		if tree.left == nil {
 			tree.left = node
-			return
+			return nil
 		}
 		tree.left.AddNode(node)
 	} else if node.key > tree.key {
 		if tree.right == nil {
 			tree.right = node
-			return
+			return nil
 		}
 		tree.right.AddNode(node)
+	} else if node.key == tree.key {
+		return fmt.Errorf("key already exists")
 	} else {
 		tree.value = node.value
 	}
@@ -87,6 +93,17 @@ func (tree *AVLTree[K, V]) AddNode(node *AVLTree[K, V]) {
 		}
 		tree.RotateLeft()
 	}
+	return nil
+}
+
+func (tree *AVLTree[K, V]) Clear() *AVLTree[K, V] {
+	if tree == nil {
+		return nil
+	}
+	tree.left = tree.left.Clear()
+	tree.right = tree.right.Clear()
+	tree = nil
+	return tree
 }
 
 func (tree *AVLTree[K, V]) DebugInorderTraversalAsList() {
@@ -247,6 +264,22 @@ func (tree *AVLTree[K, V]) RotateRight() {
 	*tree = newRoot
 }
 
+func (tree *AVLTree[K, V]) Update(key K, value V) error {
+	node, err := tree.Find(key)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	*node = AVLTree[K, V]{
+		TreeNode: &TreeNode[K, V]{
+			key:   key,
+			value: value,
+		},
+		left:  node.left,
+		right: node.right,
+	}
+	return nil
+}
+
 func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], error) {
 	var err error
 	// If the node is not found, return an error
@@ -257,12 +290,12 @@ func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], e
 	if key < tree.key {
 		tree.left, err = delete(tree.left, key)
 		if err != nil {
-			return nil, fmt.Errorf("%w", err)
+			return tree, fmt.Errorf("%w", err)
 		}
 	} else if key > tree.key {
 		tree.right, err = delete(tree.right, key)
 		if err != nil {
-			return nil, fmt.Errorf("%w", err)
+			return tree, fmt.Errorf("%w", err)
 		}
 	} else if key == tree.key {
 		// Set the tree.left as the new node
@@ -271,8 +304,9 @@ func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], e
 		// by calling AddNode, so it can re-determine
 		// the position of the node under the new parent.
 		if tree.left != nil {
+			right := tree.right
 			*tree = *tree.left
-			tree.AddNode(tree.right)
+			tree.AddNode(right)
 		} else {
 			if tree.right != nil {
 				*tree = *tree.right
