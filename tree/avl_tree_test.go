@@ -429,15 +429,15 @@ func TestAVLTreeDeleteNode(t *testing.T) {
 		{
 			name: "Test delete tree: delete but item not found",
 			inputKeys: []int{
-				5, 6, 2, 10, 12, 3, 1, 9,
+				2, 1, 4, 3, 5,
 			},
 			inputVals: []int{
-				5, 6, 2, 10, 12, 3, 1, 9,
+				2, 1, 4, 3, 5,
 			},
 			inputDeleteKey: 99,
 			wantError:      true,
 			wantTreeVal: []int{
-				5, 6, 2, 10, 12, 3, 1, 9,
+				2, 1, 4, 3, 5,
 			},
 		},
 		{
