@@ -91,48 +91,56 @@ func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("\n")
 }
 
+func (tree *BinarySearchTree[K, V]) Delete(key K) error {
+	var err error
+	_, err = deleteBSTNode(tree, key)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	return nil
+}
+
 // Delete a node from the tree by key.
 // After deleting the node, the parent node
 // will re-add the node's children.
-func (tree *BinarySearchTree[K, V]) Delete(key K) error {
+func deleteBSTNode[K cmp.Ordered, V any](tree *BinarySearchTree[K, V], key K) (*BinarySearchTree[K, V], error) {
+	var err error
 	// If the node is not found, return an error
 	if tree == nil {
-		return fmt.Errorf("key not found")
+		return nil, fmt.Errorf("key not found")
 	}
 
 	if key < tree.key {
-		err := tree.left.Delete(key)
+		tree.left, err = deleteBSTNode(tree.left, key)
 		if err != nil {
-			return fmt.Errorf("%w", err)
+			return tree, fmt.Errorf("%w", err)
 		}
-	}
-	if key > tree.key {
-		err := tree.right.Delete(key)
+	} else if key > tree.key {
+		tree.right, err = deleteBSTNode(tree.right, key)
 		if err != nil {
-			return fmt.Errorf("%w", err)
+			return tree, fmt.Errorf("%w", err)
 		}
-	}
-
-	if key == tree.key {
+	} else if key == tree.key {
 		// Set the tree.left as the new node
 		// replacing the deleted node.
 		// Then add the right child of the deleted node
 		// by calling AddNode, so it can re-determine
 		// the position of the node under the new parent.
 		if tree.left != nil {
+			right := tree.right
 			*tree = *tree.left
-			tree.AddNode(tree.right)
+			_ = tree.AddNode(right)
 		} else {
 			if tree.right != nil {
 				*tree = *tree.right
 			}
 		}
 		if tree.left == nil && tree.right == nil {
-			return nil
+			return nil, nil
 		}
 	}
 
-	return nil
+	return tree, nil
 }
 
 func (tree *BinarySearchTree[K, V]) Find(key K) (*BinarySearchTree[K, V], error) {
