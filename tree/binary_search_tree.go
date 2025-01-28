@@ -91,6 +91,16 @@ func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("\n")
 }
 
+func (tree *BinarySearchTree[K, V]) DebugLevelOrderTraversalAsList() {
+	fmt.Printf("Level Order Traversal:\n")
+	list := tree.LevelOrderTraversal()
+	for _, node := range list {
+		fmt.Printf("%+v", node.TreeNode)
+		fmt.Printf("\n")
+	}
+	fmt.Printf("\n")
+}
+
 func (tree *BinarySearchTree[K, V]) Delete(key K) error {
 	var err error
 	_, err = deleteBSTNode(tree, key)
