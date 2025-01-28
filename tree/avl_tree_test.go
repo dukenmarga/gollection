@@ -192,13 +192,114 @@ func TestNewAVLTreeRoot(t *testing.T) {
 
 			// Add the remaining nodes
 			for i := 1; i < len(tt.inputKeys); i++ {
-				root.Add(tt.inputKeys[i], tt.inputVals[i])
+				_ = root.Add(tt.inputKeys[i], tt.inputVals[i])
 			}
 
 			got := root.InorderTraversal()
 			for i, wantVal := range tt.wantTreeVal {
 				if wantVal != got[i].value {
 					t.Errorf("actual = %v, want %v", got[i], wantVal)
+				}
+			}
+		})
+	}
+}
+
+type testAVLTAdd[K, V any] struct {
+	name        string
+	inputKeys   []K
+	inputVals   []V
+	wantError   []bool
+	wantTreeVal []V
+}
+
+func TestAVLTreeAdd(t *testing.T) {
+	tests := []testAVLTAdd[int, int]{
+		{
+			name: "Test add node int values (1 node)",
+			inputKeys: []int{
+				10,
+			},
+			inputVals: []int{
+				10,
+			},
+			wantError: []bool{false},
+			wantTreeVal: []int{
+				10,
+			},
+		},
+		{
+			name: "Test add node int values (2 nodes incremental)",
+			inputKeys: []int{
+				10, 20,
+			},
+			inputVals: []int{
+				10, 20,
+			},
+			wantError: []bool{false, false},
+			wantTreeVal: []int{
+				10, 20,
+			},
+		},
+		{
+			name: "Test new tree int values (2 nodes decremental)",
+			inputKeys: []int{
+				20, 10,
+			},
+			inputVals: []int{
+				20, 10,
+			},
+			wantError: []bool{false, false},
+			wantTreeVal: []int{
+				10, 20,
+			},
+		},
+		{
+			name: "Test new tree from several zero int",
+			inputKeys: []int{
+				0, 0,
+			},
+			inputVals: []int{
+				0, 0,
+			},
+			wantError: []bool{false, true},
+			wantTreeVal: []int{
+				0,
+			},
+		},
+		{
+			name: "Test new tree int values many nodes",
+			inputKeys: []int{
+				5, 6, 2, 10, 12, 5, 1, 9,
+			},
+			inputVals: []int{
+				5, 6, 2, 10, 12, 5, 1, 9,
+			},
+			wantError: []bool{false, false, false, false, false, true, false, false},
+			wantTreeVal: []int{
+				1, 2, 5, 6, 9, 10, 12,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Add root
+			root := NewAVLTRoot[int](tt.inputKeys[0], tt.inputVals[0])
+
+			// Add the remaining nodes
+			for i := 1; i < len(tt.inputKeys); i++ {
+				err := root.Add(tt.inputKeys[i], tt.inputVals[i])
+				if tt.wantError[i] {
+					if (err != nil) != tt.wantError[i] {
+						t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError[i], tt.wantError)
+					}
+				}
+			}
+
+			got := root.InorderTraversal()
+			for i, wantVal := range tt.wantTreeVal {
+				if got[i].value != wantVal {
+					t.Errorf("actual = %v, want %v", got[i].value, wantVal)
 				}
 			}
 		})
