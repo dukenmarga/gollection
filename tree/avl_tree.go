@@ -304,8 +304,9 @@ func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], e
 		// by calling AddNode, so it can re-determine
 		// the position of the node under the new parent.
 		if tree.left != nil {
+			right := tree.right
 			*tree = *tree.left
-			tree.AddNode(tree.right)
+			tree.AddNode(right)
 		} else {
 			if tree.right != nil {
 				*tree = *tree.right
