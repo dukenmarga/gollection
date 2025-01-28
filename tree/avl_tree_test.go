@@ -504,3 +504,86 @@ func TestAVLTreeClear(t *testing.T) {
 		})
 	}
 }
+
+type testAVLTreeUpdate[K cmp.Ordered, V any] struct {
+	name        string
+	inputKeys   []K
+	inputVals   []V
+	updateKey   K
+	updateVal   V
+	wantError   bool
+	wantTreeVal []V
+}
+
+func TestAVLTreeUpdate(t *testing.T) {
+	tests := []testAVLTreeUpdate[int, int]{
+		{
+			name: "Test update 1 node tree ",
+			inputKeys: []int{
+				2, 1, 4, 3, 5,
+			},
+			inputVals: []int{
+				2, 1, 4, 3, 5,
+			},
+			updateKey: 1,
+			updateVal: 99,
+			wantError: false,
+			wantTreeVal: []int{
+				2, 99, 4, 3, 5,
+			},
+		},
+		{
+			name: "Test update the root ",
+			inputKeys: []int{
+				2, 1, 4, 3, 5,
+			},
+			inputVals: []int{
+				2, 1, 4, 3, 5,
+			},
+			updateKey: 2,
+			updateVal: 99,
+			wantError: false,
+			wantTreeVal: []int{
+				99, 1, 4, 3, 5,
+			},
+		},
+		{
+			name: "Test update tree: key not found",
+			inputKeys: []int{
+				2, 1, 4, 3, 5,
+			},
+			inputVals: []int{
+				2, 1, 4, 3, 5,
+			},
+			updateKey: 99,
+			updateVal: 99,
+			wantError: true,
+			wantTreeVal: []int{
+				2, 1, 4, 3, 5,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Add root
+			root := NewAVLTArray[int](tt.inputKeys, tt.inputVals)
+			err := root.Update(tt.updateKey, tt.updateVal)
+
+			got := root.LevelOrderTraversal()
+			if len(got) != len(tt.wantTreeVal) {
+				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
+			}
+			if tt.wantError {
+				if (err != nil) != tt.wantError {
+					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
+				}
+			} else {
+				for i, wantTreeVal := range tt.wantTreeVal {
+					if got[i].value != wantTreeVal {
+						t.Errorf("actual = %v, want %v", got[i].value, wantTreeVal)
+					}
+				}
+			}
+		})
+	}
+}

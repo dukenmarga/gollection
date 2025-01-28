@@ -264,6 +264,22 @@ func (tree *AVLTree[K, V]) RotateRight() {
 	*tree = newRoot
 }
 
+func (tree *AVLTree[K, V]) Update(key K, value V) error {
+	node, err := tree.Find(key)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	*node = AVLTree[K, V]{
+		TreeNode: &TreeNode[K, V]{
+			key:   key,
+			value: value,
+		},
+		left:  node.left,
+		right: node.right,
+	}
+	return nil
+}
+
 func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], error) {
 	var err error
 	// If the node is not found, return an error
