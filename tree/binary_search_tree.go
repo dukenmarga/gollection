@@ -41,7 +41,7 @@ func NewBSTRoot[K cmp.Ordered, V any](key K, value V) *BinarySearchTree[K, V] {
 // If called by non-root node, it will add the new node under
 // the parent node and probably will break the BST rule if the
 // new node is not in the correct order under the root.
-func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
+func (tree *BinarySearchTree[K, V]) Add(key K, value V) error {
 	newNode := &BinarySearchTree[K, V]{
 		TreeNode: &TreeNode[K, V]{
 			key:   key,
@@ -49,29 +49,36 @@ func (tree *BinarySearchTree[K, V]) Add(key K, value V) {
 		},
 	}
 
-	tree.AddNode(newNode)
+	err := tree.AddNode(newNode)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	return nil
 }
 
-func (tree *BinarySearchTree[K, V]) AddNode(node *BinarySearchTree[K, V]) {
+func (tree *BinarySearchTree[K, V]) AddNode(node *BinarySearchTree[K, V]) error {
 	if node == nil {
-		return
+		return nil
 	}
 
 	if node.key < tree.key {
 		if tree.left == nil {
 			tree.left = node
-			return
+			return nil
 		}
 		tree.left.AddNode(node)
 	} else if node.key > tree.key {
 		if tree.right == nil {
 			tree.right = node
-			return
+			return nil
 		}
 		tree.right.AddNode(node)
+	} else if node.key == tree.key {
+		return fmt.Errorf("key already exists")
 	} else {
 		tree.value = node.value
 	}
+	return nil
 }
 
 func (tree *BinarySearchTree[K, V]) DebugInorderTraversalAsList() {
