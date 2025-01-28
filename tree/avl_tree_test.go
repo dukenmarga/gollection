@@ -111,6 +111,9 @@ func TestNewAVLTreeFromArray(t *testing.T) {
 			root := NewAVLTArray[int](tt.inputKeys, tt.inputVals)
 
 			got := root.LevelOrderTraversal()
+			if len(got) != len(tt.wantTreeVal) {
+				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
+			}
 			for i, wantVal := range tt.wantTreeVal {
 				if wantVal != got[i].value {
 					t.Errorf("actual = %v, want %v", got[i].value, wantVal)
@@ -196,6 +199,9 @@ func TestNewAVLTreeRoot(t *testing.T) {
 			}
 
 			got := root.InorderTraversal()
+			if len(got) != len(tt.wantTreeVal) {
+				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
+			}
 			for i, wantVal := range tt.wantTreeVal {
 				if wantVal != got[i].value {
 					t.Errorf("actual = %v, want %v", got[i], wantVal)
@@ -297,6 +303,9 @@ func TestAVLTreeAdd(t *testing.T) {
 			}
 
 			got := root.InorderTraversal()
+			if len(got) != len(tt.wantTreeVal) {
+				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
+			}
 			for i, wantVal := range tt.wantTreeVal {
 				if got[i].value != wantVal {
 					t.Errorf("actual = %v, want %v", got[i].value, wantVal)
@@ -349,8 +358,8 @@ func TestAVLTreeSearching(t *testing.T) {
 			got, err := root.Find(tt.inputSearchVal)
 
 			if tt.wantError {
-				if err == nil {
-					t.Errorf("actual = %v, want %v", err == nil, tt.wantError)
+				if (err != nil) != tt.wantError {
+					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
 				}
 			} else {
 				if got.value != tt.wantSearchVal {
@@ -452,16 +461,18 @@ func TestAVLTreeDeleteNode(t *testing.T) {
 			root := NewAVLTArray[int](tt.inputKeys, tt.inputVals)
 			err := root.Delete(tt.inputDeleteKey)
 
+			got := root.LevelOrderTraversal()
+			if len(got) != len(tt.wantTreeVal) {
+				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
+			}
 			if tt.wantError {
 				if (err != nil) != tt.wantError {
 					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
 				}
-			} else {
-				got := root.LevelOrderTraversal()
-				for i, wantVal := range tt.wantTreeVal {
-					if wantVal != got[i].value {
-						t.Errorf("actual = %v, want %v", got[i].value, wantVal)
-					}
+			}
+			for i, wantVal := range tt.wantTreeVal {
+				if wantVal != got[i].value {
+					t.Errorf("actual = %v, want %v", got[i].value, wantVal)
 				}
 			}
 		})
@@ -472,7 +483,6 @@ type testAVLTreeClear[K cmp.Ordered, V any] struct {
 	name        string
 	inputKeys   []K
 	inputVals   []V
-	wantError   bool
 	wantTreeVal []V
 }
 
@@ -488,7 +498,6 @@ func TestAVLTreeClear(t *testing.T) {
 			inputVals: []int{
 				2, 1, 4, 3, 5,
 			},
-			wantError:   false,
 			wantTreeVal: []int{},
 		},
 		{
@@ -499,7 +508,6 @@ func TestAVLTreeClear(t *testing.T) {
 			inputVals: []int{
 				6, 2, 9, 1, 4, 8, 11, 3, 5, 7, 10, 12, 13,
 			},
-			wantError:   false,
 			wantTreeVal: []int{},
 		},
 	}
@@ -510,6 +518,9 @@ func TestAVLTreeClear(t *testing.T) {
 			root = root.Clear()
 
 			got := root.LevelOrderTraversal()
+			if len(got) != len(tt.wantTreeVal) {
+				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
+			}
 			for i, g := range got {
 				if g.value != tt.wantTreeVal[i] {
 					t.Errorf("actual = %v, want %v", got[i].value, g.value)
@@ -591,11 +602,10 @@ func TestAVLTreeUpdate(t *testing.T) {
 				if (err != nil) != tt.wantError {
 					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
 				}
-			} else {
-				for i, wantTreeVal := range tt.wantTreeVal {
-					if got[i].value != wantTreeVal {
-						t.Errorf("actual = %v, want %v", got[i].value, wantTreeVal)
-					}
+			}
+			for i, wantTreeVal := range tt.wantTreeVal {
+				if got[i].value != wantTreeVal {
+					t.Errorf("actual = %v, want %v", got[i].value, wantTreeVal)
 				}
 			}
 		})
