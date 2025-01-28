@@ -431,6 +431,20 @@ func TestAVLTreeDeleteNode(t *testing.T) {
 				5, 6, 2, 10, 12, 3, 1, 9,
 			},
 		},
+		{
+			name: "Test delete tree: delete the root node",
+			inputKeys: []int{
+				4, 3, 1, 2, 6, 5, 7,
+			},
+			inputVals: []int{
+				4, 3, 1, 2, 6, 5, 7,
+			},
+			inputDeleteKey: 4,
+			wantError:      false,
+			wantTreeVal: []int{
+				3, 1, 6, 2, 5, 7,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -467,7 +481,7 @@ func TestAVLTreeClear(t *testing.T) {
 	// https://stackoverflow.com/questions/3955680/how-to-check-if-my-avl-tree-implementation-is-correct
 	tests := []testAVLTreeClear[int, int]{
 		{
-			name: "Test delete tree: delete item 1 from tree",
+			name: "Test clear the tree 1",
 			inputKeys: []int{
 				2, 1, 4, 3, 5,
 			},
@@ -478,7 +492,7 @@ func TestAVLTreeClear(t *testing.T) {
 			wantTreeVal: []int{},
 		},
 		{
-			name: "Test delete tree: delete item 1 from tree",
+			name: "Test clear the tree 2",
 			inputKeys: []int{
 				6, 2, 9, 1, 4, 8, 11, 3, 5, 7, 10, 12, 13,
 			},
