@@ -487,8 +487,6 @@ type testAVLTreeClear[K cmp.Ordered, V any] struct {
 }
 
 func TestAVLTreeClear(t *testing.T) {
-	// Test case is taken from:
-	// https://stackoverflow.com/questions/3955680/how-to-check-if-my-avl-tree-implementation-is-correct
 	tests := []testAVLTreeClear[int, int]{
 		{
 			name: "Test clear the tree 1",
@@ -521,9 +519,9 @@ func TestAVLTreeClear(t *testing.T) {
 			if len(got) != len(tt.wantTreeVal) {
 				t.Errorf("actual length = %v, want length %v", len(got), len(tt.wantTreeVal))
 			}
-			for i, g := range got {
-				if g.value != tt.wantTreeVal[i] {
-					t.Errorf("actual = %v, want %v", got[i].value, g.value)
+			for i, wantVal := range tt.wantTreeVal {
+				if got[i].value != wantVal {
+					t.Errorf("actual = %v, want %v", got[i].value, wantVal)
 				}
 			}
 		})
