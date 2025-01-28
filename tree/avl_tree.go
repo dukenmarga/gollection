@@ -89,6 +89,16 @@ func (tree *AVLTree[K, V]) AddNode(node *AVLTree[K, V]) {
 	}
 }
 
+func (tree *AVLTree[K, V]) Clear() *AVLTree[K, V] {
+	if tree == nil {
+		return nil
+	}
+	tree.left = tree.left.Clear()
+	tree.right = tree.right.Clear()
+	tree = nil
+	return tree
+}
+
 func (tree *AVLTree[K, V]) DebugInorderTraversalAsList() {
 	fmt.Printf("Inorder Traversal:\n")
 	list := tree.InorderTraversal()

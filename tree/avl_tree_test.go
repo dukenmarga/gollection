@@ -352,3 +352,54 @@ func TestAVLTreeDeleteNode(t *testing.T) {
 		})
 	}
 }
+
+type testAVLTreeClear[K cmp.Ordered, V any] struct {
+	name        string
+	inputKeys   []K
+	inputVals   []V
+	wantError   bool
+	wantTreeVal []V
+}
+
+func TestAVLTreeClear(t *testing.T) {
+	// Test case is taken from:
+	// https://stackoverflow.com/questions/3955680/how-to-check-if-my-avl-tree-implementation-is-correct
+	tests := []testAVLTreeClear[int, int]{
+		{
+			name: "Test delete tree: delete item 1 from tree",
+			inputKeys: []int{
+				2, 1, 4, 3, 5,
+			},
+			inputVals: []int{
+				2, 1, 4, 3, 5,
+			},
+			wantError:   false,
+			wantTreeVal: []int{},
+		},
+		{
+			name: "Test delete tree: delete item 1 from tree",
+			inputKeys: []int{
+				6, 2, 9, 1, 4, 8, 11, 3, 5, 7, 10, 12, 13,
+			},
+			inputVals: []int{
+				6, 2, 9, 1, 4, 8, 11, 3, 5, 7, 10, 12, 13,
+			},
+			wantError:   false,
+			wantTreeVal: []int{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Add root
+			root := NewAVLTArray[int](tt.inputKeys, tt.inputVals)
+			root = root.Clear()
+
+			got := root.LevelOrderTraversal()
+			for i, g := range got {
+				if g.value != tt.wantTreeVal[i] {
+					t.Errorf("actual = %v, want %v", got[i].value, g.value)
+				}
+			}
+		})
+	}
+}
