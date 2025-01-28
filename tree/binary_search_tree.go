@@ -3,6 +3,8 @@ package tree
 import (
 	"cmp"
 	"fmt"
+
+	"github.com/dukenmarga/gollection/deque"
 )
 
 type BinarySearchTree[K cmp.Ordered, V any] struct {
@@ -150,4 +152,43 @@ func (tree *BinarySearchTree[K, V]) InorderTraversal() []*BinarySearchTree[K, V]
 	right := tree.right.InorderTraversal()
 
 	return append(left, append([]*BinarySearchTree[K, V]{tree}, right...)...)
+}
+
+func (tree *BinarySearchTree[K, V]) LevelOrderTraversal() []*BinarySearchTree[K, V] {
+	if tree == nil {
+		return []*BinarySearchTree[K, V]{}
+	}
+
+	var results []*BinarySearchTree[K, V]
+	deq := deque.NewDequeue([]*BinarySearchTree[K, V]{tree})
+	for !deq.IsEmpty() {
+		for deq.Length() > 0 {
+			node, _ := deq.PopLeft()
+			results = append(results, node)
+			if node.left != nil {
+				deq.PushRight(node.left)
+			}
+			if node.right != nil {
+				deq.PushRight(node.right)
+			}
+		}
+	}
+
+	return results
+}
+
+func (tree *BinarySearchTree[K, V]) Update(key K, value V) error {
+	node, err := tree.Find(key)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	*node = BinarySearchTree[K, V]{
+		TreeNode: &TreeNode[K, V]{
+			key:   key,
+			value: value,
+		},
+		left:  node.left,
+		right: node.right,
+	}
+	return nil
 }
