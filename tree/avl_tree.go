@@ -131,7 +131,7 @@ func (tree *AVLTree[K, V]) DebugLevelOrderTraversalAsList() {
 // will re-add the node's children.
 func (tree *AVLTree[K, V]) Delete(key K) error {
 	var err error
-	_, err = delete(tree, key)
+	_, err = deleteAVLTNode(tree, key)
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
@@ -280,7 +280,7 @@ func (tree *AVLTree[K, V]) Update(key K, value V) error {
 	return nil
 }
 
-func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], error) {
+func deleteAVLTNode[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], error) {
 	var err error
 	// If the node is not found, return an error
 	if tree == nil {
@@ -288,12 +288,12 @@ func delete[K cmp.Ordered, V any](tree *AVLTree[K, V], key K) (*AVLTree[K, V], e
 	}
 
 	if key < tree.key {
-		tree.left, err = delete(tree.left, key)
+		tree.left, err = deleteAVLTNode(tree.left, key)
 		if err != nil {
 			return tree, fmt.Errorf("%w", err)
 		}
 	} else if key > tree.key {
-		tree.right, err = delete(tree.right, key)
+		tree.right, err = deleteAVLTNode(tree.right, key)
 		if err != nil {
 			return tree, fmt.Errorf("%w", err)
 		}
