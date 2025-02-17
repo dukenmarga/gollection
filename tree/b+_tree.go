@@ -10,8 +10,8 @@ import (
 //   m should be even or 2n
 // - Root: initially will be a leaf node, but later will be an internal node
 //   Root can have min 2 children if it is an internal node
-// - Internal nodes: has (max m-1) keys and (min m/2, max m) nodes as children (pointer)
-// - Leaf nodes: has (max m-1) keys and (max m-1) values
+// - Internal nodes: has (min m/2-1, max m-1) keys and (min m/2, max m) nodes as children (pointer)
+// - Leaf nodes: has (min m/2, max m-1) keys and (min m/2, max m-1) values
 
 type BPlusTreeNode[K cmp.Ordered, V any] struct {
 	isLeaf   bool
@@ -46,6 +46,104 @@ func (tree *BPlusTree[K, V]) Add(key K, value V) {
 	// We run Split operation and get the updated root
 	// (the new root will be created if current root is splitting)
 	tree.root = node.Split(tree.m)
+}
+
+// Check whether a node contains too many
+// key/value. This function is recommended
+// to be called after adding a new key/value.
+// E.g if order m=4, then maximum key/value is 3.
+// Overflow means it needs to be split
+// to maintain the order.
+func (node *BPlusTreeNode[K, V]) IsOverflow(m int) bool {
+	if m < 3 {
+		panic("order m should be greater or equal than 3")
+	}
+	return len(node.keys) > m-1
+}
+
+// InsertKeyAndChild will insert the key/child to an internal node
+func (node *BPlusTreeNode[K, V]) InsertKeyAndChild(key K, children []*BPlusTreeNode[K, V]) error {
+	// If this node is empty, return error
+	if node == nil {
+		return fmt.Errorf("node is nil, please initialize it first")
+	}
+
+	// If the node is empty, make sure that the inserted children is 2
+	if len(node.children) == 0 {
+		if len(children) != 2 {
+			return fmt.Errorf("node is empty, then children should be 2")
+		}
+	}
+
+	// If the node is empty, just insert key and children to the node
+	if len(node.children) == 0 {
+		node.children = children
+		node.keys = []K{key}
+		return nil
+	}
+
+	// Otherwise, we need to append key and children according to the order of the key
+	for _, child := range children {
+		finishAppendChildren := false
+		for i, nodeKey := range node.keys {
+			// Find index to put the new key/value.
+			// For example we will insert key 5 to existing
+			// keys [1,3,4,7,8,9]. The index will be 3 (where 7 > 5).
+			// Then we will insert it by appending [1,3,4] + [5] + [7,8,9]
+			if nodeKey > key {
+				// index selector for left and right is determined
+				// by the position of the key.
+				// we have m-1 key, but m children, that's why
+				// we have special condition for the first item
+				j := i
+				if i != 0 {
+					j = i + 1
+				}
+				node.keys = append(node.keys[:i], append([]K{key}, node.keys[i:]...)...)
+				node.children = append(node.children[0:j], append([]*BPlusTreeNode[K, V]{child}, node.children[j:]...)...)
+				finishAppendChildren = true
+				break
+			}
+		}
+		if finishAppendChildren {
+			continue
+		}
+
+		// This is if the node is empty or if the inserted key is the largest compared to the existing keys
+		node.keys = append(node.keys, key)
+		node.children = append(node.children, child)
+	}
+
+	return nil
+}
+
+// InsertKeyAndValue will insert the key/value into a leaf node
+func (node *BPlusTreeNode[K, V]) InsertKeyAndValue(key K, value V) error {
+	// If this node is empty, return error
+	if node == nil {
+		return fmt.Errorf("node is nil, please initialize it first")
+	}
+
+	// set that this node is a leaf
+	node.isLeaf = true
+
+	for i, nodeKey := range node.keys {
+		// Find index to put the new key/value.
+		// For example we will insert key 5 to existing
+		// keys [1,3,4,7,8,9]. The index will be 3 (where 7 > 5).
+		// Then we will insert it by appending [1,3,4] + [5] + [7,8,9]
+		if nodeKey > key {
+			node.keys = append(node.keys[:i], append([]K{key}, node.keys[i:]...)...)
+			node.values = append(node.values[0:i], append([]V{value}, node.values[i:]...)...)
+			return nil
+		}
+	}
+
+	// This is if the node is empty or if the inserted key is the largest compared to the existing keys
+	node.keys = append(node.keys, key)
+	node.values = append(node.values, value)
+
+	return nil
 }
 
 // Split will split a node into 2 nodes if it is overflow.
@@ -105,6 +203,7 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 		isLeaf: isLeaf,
 	}
 
+	// Prepare the parent and its pointer to children
 	// There are 2 cases:
 	// - If the parent is nil, it means:
 	//   a. The current first node is the root
@@ -130,6 +229,8 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 		children = append(children, &secondNode)
 	}
 
+	// Promote the middle key to the parent
+	// (middle key before split is the first key of the second node)
 	err := node.parent.InsertKeyAndChild(secondNode.keys[0], children)
 	if err != nil {
 		panic(err)
@@ -137,116 +238,6 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 
 	// Recursively check the parent if it needs to split
 	return node.parent.Split(m)
-}
-
-// Check whether a node contains too many
-// key/value. This function is recommended
-// to be called after adding a new key/value.
-// E.g if order m=4, then maximum key/value is 3.
-// Overflow means it needs to be split
-// to maintain the order.
-func (node *BPlusTreeNode[K, V]) IsOverflow(m int) bool {
-	if m < 3 {
-		panic("order m should be greater or equal than 3")
-	}
-	return len(node.keys) > m-1
-}
-
-// InsertKeyAndValue will insert the key/value into a leaf node
-func (node *BPlusTreeNode[K, V]) InsertKeyAndValue(key K, value V) error {
-	// If this node is empty, return error
-	if node == nil {
-		return fmt.Errorf("node is nil, please initialize it first")
-	}
-
-	// set that this node is a leaf
-	node.isLeaf = true
-
-	for i, nodeKey := range node.keys {
-		// Find index to put the new key/value.
-		// For example we will insert key 5 to existing
-		// keys [1,3,4,7,8,9]. The index will be 3 (where 7 > 5).
-		// Then we will insert it by appending [1,3,4] + [5] + [7,8,9]
-		if nodeKey > key {
-			node.keys = append(node.keys[:i], append([]K{key}, node.keys[i:]...)...)
-			node.values = append(node.values[0:i], append([]V{value}, node.values[i:]...)...)
-			return nil
-		}
-	}
-
-	// This is if the node is empty or if the inserted key is the largest compared to the existing keys
-	node.keys = append(node.keys, key)
-	node.values = append(node.values, value)
-
-	return nil
-}
-
-// InsertKeyAndChild will insert the key/child to an internal node
-func (node *BPlusTreeNode[K, V]) InsertKeyAndChild(key K, children []*BPlusTreeNode[K, V]) error {
-	// If this node is empty, return error
-	if node == nil {
-		return fmt.Errorf("node is nil, please initialize it first")
-	}
-
-	// If the node is empty, make sure that the inserted children is 2
-	if len(node.children) == 0 {
-		if len(children) != 2 {
-			return fmt.Errorf("node is empty, then children should be 2")
-		}
-	}
-
-	// If the node is empty, just insert key and children to the node
-	if len(node.children) == 0 {
-		node.children = children
-		node.keys = []K{key}
-		return nil
-	}
-
-	// Otherwise, we need to append key and children according to the order of the key
-	for _, child := range children {
-		finishAppendChildren := false
-		for i, nodeKey := range node.keys {
-			// Find index to put the new key/value.
-			// For example we will insert key 5 to existing
-			// keys [1,3,4,7,8,9]. The index will be 3 (where 7 > 5).
-			// Then we will insert it by appending [1,3,4] + [5] + [7,8,9]
-			if nodeKey > key {
-				// index selector for left and right is determined
-				// by the position of the key.
-				// we have m-1 key, but m children, that's why
-				// we have special condition for the first item
-				j := i
-				if i != 0 {
-					j = i + 1
-				}
-				node.keys = append(node.keys[:i], append([]K{key}, node.keys[i:]...)...)
-				node.children = append(node.children[0:j], append([]*BPlusTreeNode[K, V]{child}, node.children[j:]...)...)
-				finishAppendChildren = true
-				break
-			}
-		}
-		if finishAppendChildren {
-			continue
-		}
-
-		// This is if the node is empty or if the inserted key is the largest compared to the existing keys
-		node.keys = append(node.keys, key)
-		node.children = append(node.children, child)
-	}
-
-	return nil
-}
-
-// whichNodeToInsert will return a selected node where a key/value can be inserted
-// according to its cluster order.
-func (tree *BPlusTree[K, V]) whichNodeToInsert(key K) *BPlusTreeNode[K, V] {
-	root := tree.root
-
-	// node will contain a series of keys and values
-	// that we need to compare to the search key.
-	// If the key is in the node, then return the node
-	node := searchCommonNode(root, key)
-	return node
 }
 
 // searchCommonNode() will return a node that contain
@@ -280,4 +271,16 @@ func searchCommonNode[K cmp.Ordered, V any](node *BPlusTreeNode[K, V], key K) *B
 	// If the key is greater than the last pointer key,
 	// it means that the key is probably on the last child
 	return searchCommonNode(node.children[len(node.children)-1], key)
+}
+
+// whichNodeToInsert will return a selected node where a key/value can be inserted
+// according to its cluster order.
+func (tree *BPlusTree[K, V]) whichNodeToInsert(key K) *BPlusTreeNode[K, V] {
+	root := tree.root
+
+	// node will contain a series of keys and values
+	// that we need to compare to the search key.
+	// If the key is in the node, then return the node
+	node := searchCommonNode(root, key)
+	return node
 }
