@@ -3,6 +3,7 @@ package tree
 import (
 	"cmp"
 	"reflect"
+	"slices"
 	"testing"
 )
 
@@ -872,8 +873,6 @@ func TestNodeAdd(t *testing.T) {
 
 			root := tree.root
 
-			// fmt.Printf("root: %+v\n", root)
-
 			// assert length
 			if len(root.keys) != len(tt.wantRootKeys) {
 				t.Errorf("actual keys length = %v, want keys length %v", len(root.keys), len(tt.wantRootKeys))
@@ -922,6 +921,70 @@ func TestNodeAdd(t *testing.T) {
 			// assert parent of second child
 			if root != root.children[1].parent {
 				t.Errorf("actual = %v, want %v", root, root.children[1].parent)
+			}
+		})
+	}
+}
+
+type testBPlusFind[K cmp.Ordered, V any] struct {
+	name         string
+	inputM       int
+	inputKeys    []K
+	inputValues  []V
+	inputFindKey K
+	wantKeyExist bool
+	wantError    bool
+}
+
+func TestNodeFind(t *testing.T) {
+	tests := []testBPlusFind[int, int]{
+		{
+			name:   "Test: Find 40",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputFindKey: 40,
+			wantError:    false,
+			wantKeyExist: true,
+		},
+		{
+			name:   "Test: Find 99",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputFindKey: 99,
+			wantError:    true,
+			wantKeyExist: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tree := NewBPlusTree[int, int](tt.inputM)
+			for i, key := range tt.inputKeys {
+				tree.Add(key, tt.inputValues[i])
+			}
+
+			node, err := tree.Find(tt.inputFindKey)
+
+			// assert error
+			if tt.wantError {
+				if (err != nil) != tt.wantError {
+					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
+				}
+				return
+			}
+
+			// check existence of key
+			if slices.Contains(node.keys, tt.inputFindKey) != tt.wantKeyExist {
+				t.Errorf("keys in node = %+v, want key in node %v", node.keys, tt.inputFindKey)
 			}
 		})
 	}
