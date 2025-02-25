@@ -830,7 +830,7 @@ func TestNodeAdd(t *testing.T) {
 					isLeaf: false,
 				},
 				{
-					keys:   []int{50, 70},
+					keys:   []int{70},
 					values: []int{},
 					isLeaf: false,
 				},

@@ -167,6 +167,15 @@ func (node *BPlusTreeNode[K, V]) InsertKeyAndValue(key K, value V) error {
 // it reaches the root, then it will return the root.
 // Split will handle leaf and non-leaf nodes.
 func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
+	// Split is different for leaf and non-leaf node.
+	// For leaf node:
+	// - we need to split the keys and values
+	// - splitted nodes hold all keys/values
+	// For non-leaf node:
+	// - we need to split the keys
+	// - splitted nodes hold all keys, except the middle key
+	//   that will be promoted to the parent
+
 	// - If the node keys is overflow and it is the root (node.parent is nil)
 	//   return the node as root
 	// - If the node keys is overflow, but it is not the root,
@@ -196,7 +205,13 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 	// Second node refers to the new node that is created
 	// and use the second half of the keys
 	firstNodeKeys := node.keys[0:mid]
-	secondNodeKeys := node.keys[mid:length]
+	var secondNodeKeys []K
+	if isLeaf {
+		secondNodeKeys = node.keys[mid:length]
+	} else {
+		secondNodeKeys = node.keys[mid+1 : length]
+	}
+	midKey := node.keys[mid]
 
 	// If it is a leaf node, set the values
 	firstNodeValues := []V{}
@@ -247,7 +262,7 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 
 	// Promote the middle key to the parent
 	// (middle key before split is the first key of the second node)
-	err := node.parent.InsertKeyAndChild(secondNode.keys[0], children)
+	err := node.parent.InsertKeyAndChild(midKey, children)
 	if err != nil {
 		panic(err)
 	}
