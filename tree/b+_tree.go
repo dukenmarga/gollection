@@ -3,6 +3,7 @@ package tree
 import (
 	"cmp"
 	"fmt"
+	"slices"
 )
 
 // B+ Tree rules
@@ -56,10 +57,8 @@ func (tree *BPlusTree[K, V]) Find(key K) (*BPlusTreeNode[K, V], error) {
 	// that we need to compare to the search key.
 	// If the key is in the node, then return the node
 	node := searchCommonNode(root, key)
-	for _, keyInNode := range node.keys {
-		if key == keyInNode {
-			return node, nil
-		}
+	if slices.Contains(node.keys, key) {
+		return node, nil
 	}
 	return nil, fmt.Errorf("key not found")
 }
