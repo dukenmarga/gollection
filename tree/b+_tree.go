@@ -64,6 +64,24 @@ func (tree *BPlusTree[K, V]) Find(key K) (*BPlusTreeNode[K, V], error) {
 	return nil, fmt.Errorf("key not found")
 }
 
+// Get will return the value of the matching key
+func (tree *BPlusTree[K, V]) Get(key K) (V, error) {
+	root := tree.root
+
+	// node will contain a series of keys and values
+	// that we need to compare to the search key.
+	// If the key is in the node, then return the node
+	node := searchCommonNode(root, key)
+	for i, keyInNode := range node.keys {
+		if key == keyInNode {
+			return node.values[i], nil
+		}
+	}
+	var v V
+	return v, fmt.Errorf("key not found")
+
+}
+
 // Check whether a node contains too many
 // key/value. This function is recommended
 // to be called after adding a new key/value.

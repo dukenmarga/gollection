@@ -999,3 +999,66 @@ func TestNodeFind(t *testing.T) {
 		})
 	}
 }
+
+type testBPlusGet[K cmp.Ordered, V any] struct {
+	name        string
+	inputM      int
+	inputKeys   []K
+	inputValues []V
+	inputGetKey K
+	wantValue   V
+	wantError   bool
+}
+
+func TestBPlusGet(t *testing.T) {
+	tests := []testBPlusGet[int, int]{
+		{
+			name:   "Test: Get 40",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputGetKey: 40,
+			wantError:   false,
+			wantValue:   40,
+		},
+		{
+			name:   "Test: Find 99",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputGetKey: 99,
+			wantError:   true,
+			wantValue:   0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tree := NewBPlusTree[int, int](tt.inputM)
+			for i, key := range tt.inputKeys {
+				tree.Add(key, tt.inputValues[i])
+			}
+
+			value, err := tree.Get(tt.inputGetKey)
+
+			// assert error
+			if tt.wantError {
+				if (err != nil) != tt.wantError {
+					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
+				}
+			}
+
+			// check existence of key
+			if value != tt.wantValue {
+				t.Errorf("actual value = %+v, want key in node %v", value, tt.inputGetKey)
+			}
+		})
+	}
+}
