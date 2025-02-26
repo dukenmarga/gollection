@@ -679,14 +679,15 @@ func TestNode_searchCommonNode(t *testing.T) {
 }
 
 type testBPlusAdd[K cmp.Ordered, V any] struct {
-	name              string
-	inputM            int
-	inputKeys         []K
-	inputValues       []V
-	wantError         bool
-	wantRootKeys      []K
-	wantChildren      []*BPlusTreeNode[K, V]
-	wantGrandchildren []*BPlusTreeNode[K, V]
+	name               string
+	inputM             int
+	inputKeys          []K
+	inputValues        []V
+	wantError          bool
+	wantRootKeys       []K
+	wantChildren       []*BPlusTreeNode[K, V]
+	wantGrandchildren1 []*BPlusTreeNode[K, V]
+	wantGrandchildren2 []*BPlusTreeNode[K, V]
 }
 
 func TestNodeAdd(t *testing.T) {
@@ -835,7 +836,7 @@ func TestNodeAdd(t *testing.T) {
 					isLeaf: false,
 				},
 			},
-			wantGrandchildren: []*BPlusTreeNode[int, int]{
+			wantGrandchildren1: []*BPlusTreeNode[int, int]{
 				{
 					keys:   []int{10, 20},
 					values: []int{10, 20},
@@ -851,6 +852,8 @@ func TestNodeAdd(t *testing.T) {
 					values: []int{32, 40},
 					isLeaf: true,
 				},
+			},
+			wantGrandchildren2: []*BPlusTreeNode[int, int]{
 				{
 					keys:   []int{50, 60},
 					values: []int{50, 60},
@@ -906,10 +909,17 @@ func TestNodeAdd(t *testing.T) {
 				}
 			}
 
-			// assert grandchild keys
+			// assert grandchild keys from the first child
 			for i, grandchild := range root.children[0].children {
-				if !reflect.DeepEqual(grandchild.keys, tt.wantGrandchildren[i].keys) {
-					t.Errorf("actual = %v, want %v", grandchild.keys, tt.wantGrandchildren[i].keys)
+				if !reflect.DeepEqual(grandchild.keys, tt.wantGrandchildren1[i].keys) {
+					t.Errorf("actual = %v, want %v", grandchild.keys, tt.wantGrandchildren1[i].keys)
+				}
+			}
+
+			// assert grandchild keys from the second child
+			for i, grandchild := range root.children[1].children {
+				if !reflect.DeepEqual(grandchild.keys, tt.wantGrandchildren2[i].keys) {
+					t.Errorf("actual = %v, want %v", grandchild.keys, tt.wantGrandchildren2[i].keys)
 				}
 			}
 

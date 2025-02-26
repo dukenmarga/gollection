@@ -221,17 +221,29 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 		secondNodeValues = node.values[mid:length]
 	}
 
+	// Split children
+	var firstNodeChildren []*BPlusTreeNode[K, V]
+	var secondNodeChildren []*BPlusTreeNode[K, V]
+	if node.children != nil {
+		firstNodeChildren = node.children[0 : mid+1]
+		secondNodeChildren = node.children[mid+1 : length]
+	}
+	if len(node.children) != 0 {
+	}
+
 	// Update the current node and create the second node
 	*node = BPlusTreeNode[K, V]{
-		keys:   firstNodeKeys,
-		values: firstNodeValues,
-		parent: node.parent,
-		isLeaf: isLeaf,
+		keys:     firstNodeKeys,
+		values:   firstNodeValues,
+		parent:   node.parent,
+		isLeaf:   isLeaf,
+		children: firstNodeChildren,
 	}
 	secondNode := BPlusTreeNode[K, V]{
-		keys:   secondNodeKeys,
-		values: secondNodeValues,
-		isLeaf: isLeaf,
+		keys:     secondNodeKeys,
+		values:   secondNodeValues,
+		isLeaf:   isLeaf,
+		children: secondNodeChildren,
 	}
 
 	// Prepare the parent and its pointer to children
