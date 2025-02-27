@@ -63,6 +63,17 @@ func (tree *BPlusTree[K, V]) Find(key K) (*BPlusTreeNode[K, V], error) {
 	return nil, fmt.Errorf("key not found")
 }
 
+// FirstNode will return the first node (most left leaf-node)
+func (tree *BPlusTree[K, V]) FirstNode() *BPlusTreeNode[K, V] {
+	node := tree.root
+
+	for !node.isLeaf {
+		node = node.children[0]
+	}
+
+	return node
+}
+
 // Get will return the value of the matching key
 func (tree *BPlusTree[K, V]) Get(key K) (V, error) {
 	root := tree.root
@@ -245,8 +256,6 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 		firstNodeChildren = node.children[0 : mid+1]
 		secondNodeChildren = node.children[mid+1 : length]
 	}
-	if len(node.children) != 0 {
-	}
 
 	// Update the current node and create the second node
 	*node = BPlusTreeNode[K, V]{
@@ -255,12 +264,17 @@ func (node *BPlusTreeNode[K, V]) Split(m int) *BPlusTreeNode[K, V] {
 		parent:   node.parent,
 		isLeaf:   isLeaf,
 		children: firstNodeChildren,
+		next:     node.next,
 	}
 	secondNode := BPlusTreeNode[K, V]{
 		keys:     secondNodeKeys,
 		values:   secondNodeValues,
 		isLeaf:   isLeaf,
 		children: secondNodeChildren,
+	}
+	if isLeaf {
+		secondNode.next = node.next
+		node.next = &secondNode
 	}
 
 	// Prepare the parent and its pointer to children

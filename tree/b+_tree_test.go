@@ -1062,3 +1062,124 @@ func TestBPlusGet(t *testing.T) {
 		})
 	}
 }
+
+type testBPlusAdd_CheckNext[K cmp.Ordered, V any] struct {
+	name          string
+	inputM        int
+	inputKeys     []K
+	inputValues   []V
+	wantNextKey   []K
+	wantNextValue []V
+}
+
+func TestNodeAdd_CheckNext(t *testing.T) {
+	tests := []testBPlusAdd_CheckNext[int, int]{
+		{
+			name:   "Test: Add 4 nodes to an order-4 tree, will create a parent node",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40,
+			},
+			inputValues: []int{
+				10, 20, 30, 40,
+			},
+			wantNextKey:   []int{20},
+			wantNextValue: []int{20},
+		},
+		{
+			name:   "Test: Add 5 nodes to an order-4 tree, will create a parent node",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50,
+			},
+			wantNextKey:   []int{20},
+			wantNextValue: []int{20},
+		},
+		{
+			name:   "Test: Add 6 nodes to an order-4 tree, will create a parent node",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60,
+			},
+			wantNextKey:   []int{20, 40},
+			wantNextValue: []int{20, 40},
+		},
+		{
+			name:   "Test: Add 8 nodes to an order-4 tree, will create a parent node",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60, 70, 80,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60, 70, 80,
+			},
+			wantNextKey:   []int{20, 40, 60},
+			wantNextValue: []int{20, 40, 60},
+		},
+		{
+			name:   "Test: Add 9 nodes to an order-4 tree, will create a parent node",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60, 70, 80,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60, 70, 80,
+			},
+			wantNextKey:   []int{20, 40, 60},
+			wantNextValue: []int{20, 40, 60},
+		},
+		{
+			name:   "Test: Add 10 nodes to an order-4 tree, will create two parent nodes and a grandparent node",
+			inputM: 4,
+			inputKeys: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			inputValues: []int{
+				10, 20, 30, 40, 50, 60, 70, 80, 31, 32,
+			},
+			wantNextKey:   []int{20, 31, 40, 60},
+			wantNextValue: []int{20, 31, 40, 60},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tree := NewBPlusTree[int, int](tt.inputM)
+			for i, key := range tt.inputKeys {
+				tree.Add(key, tt.inputValues[i])
+			}
+
+			node := tree.FirstNode()
+
+			count := 0
+			for node.next != nil {
+				lastKey := node.keys[len(node.keys)-1]
+				lastVal := node.values[len(node.values)-1]
+
+				// Assert the last key and value
+				if lastKey != tt.wantNextKey[count] {
+					t.Errorf("actual = %v, want %v", lastKey, tt.wantNextKey[count])
+				}
+				if lastVal != tt.wantNextValue[count] {
+					t.Errorf("actual = %v, want %v", lastVal, tt.wantNextValue[count])
+				}
+
+				node = node.next
+				count++
+			}
+
+			// Assert the length
+			if count != len(tt.wantNextKey) {
+				t.Errorf("actual = %v, want %v", count, len(tt.wantNextKey))
+			}
+			if count != len(tt.wantNextValue) {
+				t.Errorf("actual = %v, want %v", count, len(tt.wantNextValue))
+			}
+		})
+	}
+}
