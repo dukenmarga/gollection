@@ -190,6 +190,32 @@ func (node *BPlusTreeNode[K, V]) InsertKeyAndValue(key K, value V) error {
 	return nil
 }
 
+// RemoveKeyAndValue will remove the key/value from a leaf node
+func (node *BPlusTreeNode[K, V]) RemoveKeyAndValue(key K) error {
+	// If this node is empty, return error
+	if node == nil {
+		return fmt.Errorf("node is nil, please initialize it first")
+	}
+
+	if len(node.keys) == 0 {
+		return fmt.Errorf("node is empty")
+	}
+
+	for i, nodeKey := range node.keys {
+		// Find the index that contains key/value.
+		// For example we will remove key 7 from existing
+		// keys [1,3,4,7,8,9]. The index will be 3 (where 7 is).
+		// Then we will replace the key/values by forming [1,3,4] + [8,9]
+		if nodeKey == key {
+			node.keys = slices.Delete(node.keys, i, i+1)
+			node.values = slices.Delete(node.values, i, i+1)
+			return nil
+		}
+	}
+
+	return nil
+}
+
 // Split will split a node into 2 nodes if it is overflow.
 // It will be called recursively start from the leaf until
 // it reaches the root, then it will return the root.

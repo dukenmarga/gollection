@@ -1183,3 +1183,134 @@ func TestNodeAdd_CheckNext(t *testing.T) {
 		})
 	}
 }
+
+type testBPlusRemoveKeyAndValue[K cmp.Ordered, V any] struct {
+	name       string
+	inputNode  *BPlusTreeNode[K, V]
+	removedKey K
+	wantError  bool
+	wantKeys   []K
+	wantValues []V
+}
+
+func TestNodeRemoveKeyAndValue(t *testing.T) {
+	tests := []testBPlusRemoveKeyAndValue[int, int]{
+		{
+			name: "Test: A node has 3 keys/values, remove 1 from the middle, now has 2 keys/values",
+			inputNode: &BPlusTreeNode[int, int]{
+				keys: []int{
+					10, 20, 30,
+				},
+				values: []int{
+					10, 20, 30,
+				},
+			},
+			removedKey: 20,
+			wantError:  false,
+			wantKeys: []int{
+				10, 30,
+			},
+			wantValues: []int{
+				10, 30,
+			},
+		},
+		{
+			name: "Test: A node has 3 keys/values, remove 1 from beginning, now has 2 keys/values",
+			inputNode: &BPlusTreeNode[int, int]{
+				keys: []int{
+					10, 20, 30,
+				},
+				values: []int{
+					10, 20, 30,
+				},
+			},
+			removedKey: 10,
+			wantError:  false,
+			wantKeys: []int{
+				20, 30,
+			},
+			wantValues: []int{
+				20, 30,
+			},
+		},
+		{
+			name: "Test: A node has 3 keys/values, removed 1 at the end, now 2 keys/values",
+			inputNode: &BPlusTreeNode[int, int]{
+				keys: []int{
+					10, 20, 30,
+				},
+				values: []int{
+					10, 20, 30,
+				},
+			},
+			removedKey: 30,
+			wantError:  false,
+			wantKeys: []int{
+				10, 20,
+			},
+			wantValues: []int{
+				10, 20,
+			},
+		},
+		{
+			name: `Test: If a node is empty (though it's impossible since this function
+				is called inside Delete, where we need to check isUnderflow first)`,
+			inputNode: &BPlusTreeNode[int, int]{
+				keys:   []int{},
+				values: []int{},
+			},
+			removedKey: 55,
+			wantError:  true,
+			wantKeys: []int{
+				55,
+			},
+			wantValues: []int{
+				55,
+			},
+		},
+		{
+			name:       "Test: If a node is nil",
+			inputNode:  nil,
+			removedKey: 55,
+			wantError:  true,
+			wantKeys:   []int{},
+			wantValues: []int{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			node := tt.inputNode
+			err := node.RemoveKeyAndValue(tt.removedKey)
+
+			// assert error
+			if tt.wantError {
+				if (err != nil) != tt.wantError {
+					t.Errorf("actual = %v, want %v", (err != nil) == tt.wantError, tt.wantError)
+				}
+				return
+			}
+
+			// assert length
+			if len(node.keys) != len(tt.wantKeys) {
+				t.Errorf("actual keys length = %v, want keys length %v", len(node.keys), len(tt.wantKeys))
+			}
+			if len(node.values) != len(tt.wantValues) {
+				t.Errorf("actual values length = %v, want values length %v", len(node.values), len(tt.wantValues))
+			}
+
+			// assert keys
+			for i, key := range node.keys {
+				if key != tt.wantKeys[i] {
+					t.Errorf("actual = %v, want %v", key, tt.wantKeys[i])
+				}
+			}
+
+			// assert values
+			for i, value := range node.values {
+				if !reflect.DeepEqual(value, tt.wantValues[i]) {
+					t.Errorf("actual = %v, want %v", value, tt.wantValues[i])
+				}
+			}
+		})
+	}
+}
